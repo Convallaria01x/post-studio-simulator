@@ -5,6 +5,9 @@ const state = {
   showStats: true,
   zoom: 1,
   avatar: '',
+  avatarZoom: 100,
+  avatarX: 50,
+  avatarY: 50,
   drafts: {
     x: '',
     threads: '',
@@ -81,11 +84,25 @@ function applyAvatar() {
   ['X', 'T'].forEach((suffix) => {
     const img = $('avatarImage' + suffix);
     const fallback = $('avatarFallback' + suffix);
-    if (state.avatar) { img.src = state.avatar; img.style.display = 'block'; fallback.style.display = 'none'; }
+    if (state.avatar) {
+      img.src = state.avatar;
+      img.style.display = 'block';
+      img.style.objectPosition = state.avatarX + '% ' + state.avatarY + '%';
+      img.style.transform = 'scale(' + (state.avatarZoom / 100) + ')';
+      fallback.style.display = 'none';
+    }
     else { img.removeAttribute('src'); img.style.display = 'none'; fallback.style.display = 'grid'; fallback.textContent = data().name.charAt(0); }
   });
   const compose = $('avatarImageCompose');
-  if (state.avatar) { compose.src = state.avatar; compose.style.display = 'block'; } else compose.style.display = 'none';
+  if (state.avatar) {
+    compose.src = state.avatar;
+    compose.style.display = 'block';
+    compose.style.objectPosition = state.avatarX + '% ' + state.avatarY + '%';
+    compose.style.transform = 'scale(' + (state.avatarZoom / 100) + ')';
+  } else compose.style.display = 'none';
+  $('avatarZoomValue').textContent = state.avatarZoom + '%';
+  $('avatarXValue').textContent = state.avatarX + '%';
+  $('avatarYValue').textContent = state.avatarY + '%';
 }
 
 document.querySelectorAll('input, textarea').forEach((input) => input.addEventListener('input', render));
@@ -107,6 +124,12 @@ $('avatarInput').addEventListener('change', (event) => {
   const reader = new FileReader(); reader.onload = () => { state.avatar = reader.result; render(); }; reader.readAsDataURL(file);
 });
 $('clearAvatar').addEventListener('click', () => { state.avatar = ''; $('avatarInput').value = ''; render(); });
+['avatarZoom', 'avatarX', 'avatarY'].forEach((id) => $(id).addEventListener('input', () => {
+  state.avatarZoom = Number($('avatarZoom').value);
+  state.avatarX = Number($('avatarX').value);
+  state.avatarY = Number($('avatarY').value);
+  render();
+}));
 $('toggleStats').addEventListener('click', () => { state.showStats = !state.showStats; render(); });
 $('zoomIn').addEventListener('click', () => { state.zoom = Math.min(1.2, +(state.zoom + .1).toFixed(2)); render(); });
 $('zoomOut').addEventListener('click', () => { state.zoom = Math.max(.8, +(state.zoom - .1).toFixed(2)); render(); });

@@ -39,6 +39,14 @@
       <div class="field-group">
         <label for="avatarInput">头像</label>
         <div class="file-row"><input id="avatarInput" type="file" accept="image/*" /><button id="clearAvatar" class="mini-button" type="button">清除</button></div>
+        <div class="avatar-adjustments">
+          <label for="avatarZoom">缩放 <output id="avatarZoomValue">100%</output></label>
+          <input id="avatarZoom" type="range" min="100" max="180" value="100" />
+          <label for="avatarX">水平位置 <output id="avatarXValue">50%</output></label>
+          <input id="avatarX" type="range" min="0" max="100" value="50" />
+          <label for="avatarY">垂直位置 <output id="avatarYValue">50%</output></label>
+          <input id="avatarY" type="range" min="0" max="100" value="50" />
+        </div>
       </div>
       <div class="field-group">
         <label for="content">正文 <span class="counter" id="charCount">0 / 280</span></label>
