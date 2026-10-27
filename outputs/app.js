@@ -8,6 +8,8 @@ const state = {
   avatarZoom: 120,
   avatarX: 50,
   avatarY: 50,
+  media: '',
+  mediaMode: 'contain',
   drafts: {
     x: '',
     threads: '',
@@ -37,6 +39,25 @@ function data() {
 function setText(id, value) {
   const element = $(id);
   if (element) element.textContent = value;
+}
+
+function applyMedia() {
+  ['X', 'T'].forEach((suffix) => {
+    const box = $('postMedia' + suffix);
+    const image = $('mediaImage' + suffix);
+    const hasMedia = Boolean(state.media);
+    box.classList.toggle('has-media', hasMedia);
+    if (!hasMedia) {
+      image.removeAttribute('src');
+      box.style.removeProperty('aspect-ratio');
+      return;
+    }
+    if (image.src !== state.media) image.src = state.media;
+    image.style.objectFit = state.mediaMode;
+    image.onload = () => {
+      if (image.naturalWidth && image.naturalHeight) box.style.aspectRatio = image.naturalWidth + ' / ' + image.naturalHeight;
+    };
+  });
 }
 
 function render() {
@@ -77,6 +98,7 @@ function render() {
   document.querySelectorAll('.platform-tab').forEach((tab) => tab.classList.toggle('active', tab.dataset.platform === state.platform));
   document.querySelectorAll('.swatch').forEach((swatch) => swatch.classList.toggle('active', swatch.dataset.theme === state.theme));
   applyAvatar();
+  applyMedia();
   if (window.lucide) window.lucide.createIcons();
 }
 
@@ -148,6 +170,22 @@ $('clearAvatar').addEventListener('click', () => {
   state.avatarY = Number($('avatarY').value);
   render();
 }));
+$('mediaInput').addEventListener('change', (event) => {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => { state.media = reader.result; render(); };
+  reader.readAsDataURL(file);
+});
+$('clearMedia').addEventListener('click', () => {
+  state.media = '';
+  $('mediaInput').value = '';
+  render();
+});
+$('mediaMode').addEventListener('change', (event) => {
+  state.mediaMode = event.target.value;
+  render();
+});
 $('toggleStats').addEventListener('click', () => { state.showStats = !state.showStats; render(); });
 $('zoomIn').addEventListener('click', () => { state.zoom = Math.min(1.2, +(state.zoom + .1).toFixed(2)); render(); });
 $('zoomOut').addEventListener('click', () => { state.zoom = Math.max(.8, +(state.zoom - .1).toFixed(2)); render(); });
