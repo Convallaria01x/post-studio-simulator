@@ -16,8 +16,8 @@ const card = $('socialCard');
 
 function data() {
   return {
-    name: $('displayName').value.trim() || '李见',
-    handle: $('handle').value.trim().replace(/^@/, '') || 'ordnorii',
+    name: $('displayName').value.trim() || '空想泡芙',
+    handle: $('handle').value.trim().replace(/^@/, '') || 'floppetharyn',
     content: $('content').value,
     date: $('dateText').value.trim() || '16:31 · 2026/10/16',
     views: $('viewText').value.trim() || '0 次查看',
@@ -31,7 +31,10 @@ function data() {
   };
 }
 
-function setText(id, value) { $(id).textContent = value; }
+function setText(id, value) {
+  const element = $(id);
+  if (element) element.textContent = value;
+}
 
 function render() {
   const d = data();
