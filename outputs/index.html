@@ -98,16 +98,17 @@
               <div class="x-actions" id="xActions"><span>◯</span><span>⇄</span><span>♡</span><span>▱</span><span>↥</span></div>
             </div>
             <div class="threads-screen" id="threadsScreen">
-              <div class="threads-status"><span>7:37</span><span>VPN&nbsp; 5GA ▮▮ 5G ▮▮ ◔ <b>85</b> ⚡</span></div>
-              <div class="threads-header"><span class="back-arrow">←</span><div><strong id="threadTitle">中文</strong><span id="threadViews">697 次观看　›</span></div><span class="header-icons">♧　•••</span></div>
+              <div class="threads-status"><span>7:37</span><span class="status-icons"><em>VPN</em><span class="signal-group">5GA<i data-lucide="signal-high"></i></span><span class="signal-group">5G<i data-lucide="signal-high"></i></span><i data-lucide="wifi"></i><b>85</b><i data-lucide="zap"></i></span></div>
+              <div class="threads-header"><button class="icon-button back-button" type="button" aria-label="返回"><i data-lucide="arrow-left"></i></button><div><strong id="threadTitle">中文</strong><span id="threadViews">697 次观看　›</span></div><div class="header-icons"><i data-lucide="bell-ring"></i><i data-lucide="more-horizontal"></i></div></div>
               <div class="thread-profile">
                 <div class="phone-avatar"><img id="avatarImageT" alt="" /><span id="avatarFallbackT">李</span></div>
                 <div><strong id="previewNameT">convallaria_01</strong><span id="threadAge">2 小时</span></div>
               </div>
               <div class="thread-copy" id="previewContentT"></div>
-              <div class="thread-actions" id="threadActions"><span>♡ <b id="previewLikesT">21</b></span><span>◯</span><span>↻</span><span>▷ <b id="previewSharesT">1</b></span><span>▥</span></div>
+              <div class="thread-actions" id="threadActions"><span><i data-lucide="heart"></i><b id="previewLikesT">21</b></span><span><i data-lucide="message-circle"></i></span><span><i data-lucide="repeat-2"></i></span><span><i data-lucide="send"></i><b id="previewSharesT">1</b></span><span><i data-lucide="chart-no-axes-column-increasing"></i></span></div>
               <div class="thread-divider"></div><div class="thread-dynamics">查看动态　›</div>
-              <div class="thread-compose"><div class="small-avatar"><img id="avatarImageCompose" alt="" /></div><span>添加到串文</span><b>▣　GIF　↗</b></div>
+              <div class="thread-compose"><div class="small-avatar"><img id="avatarImageCompose" alt="" /></div><span>添加到串文</span><b><i data-lucide="image"></i><strong>GIF</strong><i data-lucide="expand"></i></b></div>
+              <div class="thread-systembar"><span></span></div>
             </div>
           </article>
         </div>
@@ -116,6 +117,7 @@
     </section>
   </main>
   <div class="toast" id="toast" role="status">图片已保存</div>
+  <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   <script src="app.js"></script>
 </body>

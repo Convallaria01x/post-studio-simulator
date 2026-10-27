@@ -1,6 +1,6 @@
 const $ = (id) => document.getElementById(id);
 const state = {
-  platform: 'x',
+  platform: new URLSearchParams(window.location.search).get('template') === 'threads' ? 'threads' : 'x',
   theme: 'paper',
   showStats: true,
   zoom: 1,
@@ -10,6 +10,7 @@ const state = {
     threads: '其实我一直在等\n有没有签售姐问他俩喜欢对方的哪张小卡\n或者哪个造型\n图可能会精选一些自己满意的小卡送给他哥\n壮没准还会指定要哪张…\n我一想到两个人家里还会有卡册\n没事的时候一起贴一下\n萌鼠了…',
   },
 };
+if (state.platform === 'threads') $('content').value = state.drafts.threads;
 const card = $('socialCard');
 
 function data() {
@@ -25,7 +26,7 @@ function data() {
     likes: $('likes').value.trim() || '21',
     replies: $('replies').value.trim() || '8',
     reposts: $('reposts').value.trim() || '1',
-    shares: $('shares').value.trim() || '0',
+    shares: $('shares').value.trim() || '1',
   };
 }
 
@@ -62,6 +63,7 @@ function render() {
   document.querySelectorAll('.platform-tab').forEach((tab) => tab.classList.toggle('active', tab.dataset.platform === state.platform));
   document.querySelectorAll('.swatch').forEach((swatch) => swatch.classList.toggle('active', swatch.dataset.theme === state.theme));
   applyAvatar();
+  if (window.lucide) window.lucide.createIcons();
 }
 
 function applyAvatar() {
@@ -103,8 +105,10 @@ $('exportButton').addEventListener('click', async () => {
   try {
     if (!window.html2canvas) throw new Error('html2canvas is not ready');
     await document.fonts.ready;
+    card.classList.add('exporting');
+    const targetWidth = state.platform === 'threads' ? 1220 : 1080;
     const shot = await html2canvas(card, {
-      scale: 1080 / card.getBoundingClientRect().width,
+      scale: targetWidth / card.getBoundingClientRect().width,
       backgroundColor: '#ffffff',
       useCORS: true,
       logging: false,
@@ -115,6 +119,7 @@ $('exportButton').addEventListener('click', async () => {
     link.click();
     $('toast').textContent = '图片已保存，可以直接发到小红书';
   } catch { $('toast').textContent = '保存失败，请稍后再试'; }
+  finally { card.classList.remove('exporting'); }
   button.disabled = false; button.innerHTML = '<span class="button-icon">↓</span>保存图片';
   $('toast').classList.add('show'); setTimeout(() => $('toast').classList.remove('show'), 2400);
 });
