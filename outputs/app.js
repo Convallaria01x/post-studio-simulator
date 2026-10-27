@@ -9,7 +9,7 @@ const state = {
   avatarX: 50,
   avatarY: 50,
   media: '',
-  mediaMode: 'contain',
+  mediaMode: 'cover',
   drafts: {
     x: '',
     threads: '',
@@ -54,9 +54,7 @@ function applyMedia() {
     }
     if (image.src !== state.media) image.src = state.media;
     image.style.objectFit = state.mediaMode;
-    image.onload = () => {
-      if (image.naturalWidth && image.naturalHeight) box.style.aspectRatio = image.naturalWidth + ' / ' + image.naturalHeight;
-    };
+    box.style.aspectRatio = '3 / 4';
   });
 }
 
