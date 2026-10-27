@@ -125,6 +125,16 @@
       <div class="stage-footer"><span id="dimensionLabel">1080 × 1440 · 3:4</span><span>自适应排版 · 适合小红书</span></div>
     </section>
   </main>
+  <div class="save-sheet" id="saveSheet" aria-hidden="true">
+    <div class="save-sheet-backdrop" id="closeSaveSheet"></div>
+    <div class="save-sheet-card" role="dialog" aria-modal="true" aria-label="保存图片">
+      <button class="save-sheet-close" id="closeSaveSheetButton" type="button" aria-label="关闭">×</button>
+      <strong>图片已生成</strong>
+      <span>长按图片保存到相册，也可以使用系统分享</span>
+      <img id="savePreview" alt="生成的图片预览" />
+      <button class="primary-button save-share-button" id="shareSavedImage" type="button">系统分享 / 保存</button>
+    </div>
+  </div>
   <div class="toast" id="toast" role="status">图片已保存</div>
   <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>

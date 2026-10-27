@@ -222,35 +222,69 @@ function canvasToBlob(canvas) {
   });
 }
 
+let savedBlob = null;
+let savedPreviewUrl = '';
+
+function openSaveSheet(blob, filename) {
+  savedBlob = blob;
+  if (savedPreviewUrl) URL.revokeObjectURL(savedPreviewUrl);
+  savedPreviewUrl = URL.createObjectURL(blob);
+  $('savePreview').src = savedPreviewUrl;
+  $('savePreview').dataset.filename = filename;
+  $('saveSheet').classList.add('open');
+  $('saveSheet').setAttribute('aria-hidden', 'false');
+}
+
+function closeSaveSheet() {
+  $('saveSheet').classList.remove('open');
+  $('saveSheet').setAttribute('aria-hidden', 'true');
+  if (savedPreviewUrl) URL.revokeObjectURL(savedPreviewUrl);
+  savedPreviewUrl = '';
+  savedBlob = null;
+  $('savePreview').removeAttribute('src');
+}
+
 async function saveImage(canvas) {
   const blob = await canvasToBlob(canvas);
   const filename = 'post-studio-' + state.platform + '.png';
   const mobile = isMobileBrowser();
-  if (mobile && navigator.share && navigator.canShare && typeof File !== 'undefined') {
-    const file = new File([blob], filename, { type: 'image/png' });
-    let canShareFile = false;
-    try { canShareFile = navigator.canShare({ files: [file] }); } catch {}
-    if (canShareFile) {
-      try {
-        await navigator.share({ files: [file], title: 'Post Studio 图片' });
-        return '已打开手机分享面板，可以选择保存图片';
-      } catch (error) {
-        if (error && error.name === 'AbortError') return '已取消保存';
-      }
-    }
+  if (mobile) {
+    openSaveSheet(blob, filename);
+    return '图片已生成，请在预览中长按保存';
   }
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.download = filename;
   link.href = url;
   link.rel = 'noopener';
-  if (mobile) link.target = '_blank';
   document.body.appendChild(link);
   link.click();
   link.remove();
   setTimeout(() => URL.revokeObjectURL(url), 3000);
   return mobile ? '图片已打开，请长按图片保存' : '图片已保存，可以直接发到小红书';
 }
+
+async function shareSavedImage() {
+  if (!savedBlob) return;
+  const filename = $('savePreview').dataset.filename || 'post-studio.png';
+  try {
+    if (navigator.share && navigator.canShare && typeof File !== 'undefined') {
+      const file = new File([savedBlob], filename, { type: 'image/png' });
+      if (navigator.canShare({ files: [file] })) {
+        await navigator.share({ files: [file], title: 'Post Studio 图片' });
+        $('toast').textContent = '已打开系统分享面板';
+        return;
+      }
+    }
+  } catch (error) {
+    if (error && error.name === 'AbortError') return;
+  }
+  if (savedPreviewUrl) window.open(savedPreviewUrl, '_blank', 'noopener');
+}
+
+$('closeSaveSheet').addEventListener('click', closeSaveSheet);
+$('closeSaveSheetButton').addEventListener('click', closeSaveSheet);
+$('shareSavedImage').addEventListener('click', shareSavedImage);
 
 $('exportButton').addEventListener('click', async () => {
   const button = $('exportButton'); button.disabled = true; button.textContent = '生成中…';
