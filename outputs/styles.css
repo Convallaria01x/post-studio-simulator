@@ -139,6 +139,8 @@ input,textarea{border:1px solid #ece7e0;border-radius:11px;background:#f5f2ed;co
 .phone-card.exporting .thread-profile strong{font-size:19px}
 .phone-card.exporting .thread-profile span{font-size:17px}
 .phone-card.exporting .threads-screen .thread-copy{padding:4px 30px 0;font-size:var(--thread-copy-size,15px);line-height:var(--thread-copy-leading,1.48)}
+.threads-screen .thread-copy{height:auto;flex:none}
+.phone-card.exporting .threads-screen .thread-copy{height:auto;flex:none}
 .phone-card.exporting .thread-actions{padding:14px 30px 12px}
 .phone-card.exporting .thread-actions svg{width:25px;height:25px;min-width:25px;min-height:25px}
 .phone-card.exporting .thread-dynamics{font-size:17px;padding:13px 30px}
