@@ -174,3 +174,11 @@ input,textarea{border:1px solid #ece7e0;border-radius:11px;background:#f5f2ed;co
 .x-screen .x-actions{position:static;min-height:0;margin-top:12px;padding-bottom:18px}
 .threads-screen{height:auto!important;min-height:0;overflow:visible}
 .phone-card{overflow:hidden}
+
+/* Desktop preview: keep a tall, content-sized canvas reachable from the top
+   of the scroll area instead of centering it against the viewport. */
+@media(min-width:861px){
+  .preview-viewport{align-items:start;justify-items:center;overflow:auto}
+  .canvas-wrap{width:max-content;max-width:100%}
+  .phone-card{width:min(540px,calc(100vw - 390px));min-width:420px}
+}
