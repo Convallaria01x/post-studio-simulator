@@ -51,7 +51,8 @@ function render() {
   $('threadsScreen').style.display = state.platform === 'threads' ? 'block' : 'none';
   document.querySelectorAll('.threads-only-field').forEach((field) => { field.style.display = state.platform === 'threads' ? 'block' : 'none'; });
   $('platformLabel').textContent = state.platform === 'x' ? 'X 帖子' : 'Threads 串文';
-  $('dimensionLabel').textContent = state.platform === 'x' ? '1080 × 1920' : '1080 × 2340';
+  $('dimensionLabel').textContent = state.platform === 'x' ? '1080 × 1581' : '1080 × 2351';
+  $('previewContentX').style.fontSize = Math.max(13, Math.min(18, 5700 / Math.max(d.content.length, 1))) + 'px';
   $('toggleStats').textContent = state.showStats ? '隐藏' : '显示';
   $('xActions').style.display = state.showStats ? '' : 'none';
   $('threadActions').style.display = state.showStats ? '' : 'none';
