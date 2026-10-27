@@ -85,27 +85,3 @@ input,textarea{border:1px solid #ece7e0;border-radius:11px;background:#f5f2ed;co
 .media-mode-row select{border:1px solid #ece7e0;border-radius:8px;background:#f5f2ed;color:#777169;padding:5px 7px;font-size:10px;outline:none}
 .media-field .file-row input{flex:1}
 @media(max-width:480px){.post-media{width:min(100%,var(--media-width,260px));margin-top:13px}.x-copy,.threads-screen .thread-copy{padding-left:25px;padding-right:25px}}
-
-/* Mobile layout: keep controls and the live preview inside the viewport. */
-@media(max-width:640px){
-  html,body{overflow-x:hidden}
-  .topbar{height:60px;padding:0 14px;gap:8px}
-  .brand-mark{width:20px;height:20px;margin-right:5px}.brand-mark span{width:5px}.brand-mark span:nth-child(1){height:8px}.brand-mark span:nth-child(2){height:14px}.brand-mark span:nth-child(3){height:20px}
-  .brand-copy strong{font-size:14px}.brand-copy span{display:none}
-  .topbar-actions{gap:6px}.ghost-button,.primary-button{padding:9px 11px;font-size:11px;white-space:nowrap}
-  .app-shell{display:block;min-height:calc(100vh - 60px)}
-  .control-panel{padding:22px 14px 26px;border-right:0;border-bottom:1px solid rgba(25,24,23,.06);overflow:visible}
-  .panel-heading{margin-bottom:22px}.panel-heading h1{font-size:27px}
-  .field-row{grid-template-columns:1fr;gap:0}.compact{margin-bottom:14px}
-  .stats-grid{grid-template-columns:repeat(2,1fr)}.quick-chips{flex-wrap:wrap}
-  .preview-stage{min-height:720px}.stage-toolbar{height:auto;min-height:54px;padding:0 14px;gap:8px}.stage-label{font-size:11px}.zoom-controls{gap:6px}
-  .preview-viewport{padding:24px 12px;overflow-x:hidden}.canvas-wrap{max-width:100%}
-  .phone-card,.phone-card.platform-x,.phone-card.platform-threads{width:100%;max-width:380px;min-width:0}
-  .stage-footer{height:auto;min-height:46px;padding:8px 14px;gap:4px;flex-wrap:wrap;line-height:1.3}
-  .stage-footer span{max-width:100%}.media-mode-row select{max-width:calc(100% - 62px)}
-  .file-row{min-width:0}.file-row input{font-size:11px}
-}
-@media(max-width:360px){
-  .brand-mark{display:none}.topbar{padding:0 10px}.brand-copy{margin-right:auto}.ghost-button,.primary-button{padding-left:9px;padding-right:9px}
-  .stage-toolbar{padding-left:10px;padding-right:10px}.preview-viewport{padding-left:8px;padding-right:8px}
-}

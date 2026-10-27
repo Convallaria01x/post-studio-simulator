@@ -211,6 +211,47 @@ $('zoomIn').addEventListener('click', () => { state.zoom = Math.min(1.2, +(state
 $('zoomOut').addEventListener('click', () => { state.zoom = Math.max(.8, +(state.zoom - .1).toFixed(2)); render(); });
 window.addEventListener('resize', () => requestAnimationFrame(fitCanvas));
 $('resetButton').addEventListener('click', () => window.location.reload());
+
+function isMobileBrowser() {
+  return /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent || '');
+}
+
+function canvasToBlob(canvas) {
+  return new Promise((resolve, reject) => {
+    canvas.toBlob((blob) => blob ? resolve(blob) : reject(new Error('PNG conversion failed')), 'image/png');
+  });
+}
+
+async function saveImage(canvas) {
+  const blob = await canvasToBlob(canvas);
+  const filename = 'post-studio-' + state.platform + '.png';
+  const mobile = isMobileBrowser();
+  if (mobile && navigator.share && navigator.canShare && typeof File !== 'undefined') {
+    const file = new File([blob], filename, { type: 'image/png' });
+    let canShareFile = false;
+    try { canShareFile = navigator.canShare({ files: [file] }); } catch {}
+    if (canShareFile) {
+      try {
+        await navigator.share({ files: [file], title: 'Post Studio 图片' });
+        return '已打开手机分享面板，可以选择保存图片';
+      } catch (error) {
+        if (error && error.name === 'AbortError') return '已取消保存';
+      }
+    }
+  }
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.download = filename;
+  link.href = url;
+  link.rel = 'noopener';
+  if (mobile) link.target = '_blank';
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 3000);
+  return mobile ? '图片已打开，请长按图片保存' : '图片已保存，可以直接发到小红书';
+}
+
 $('exportButton').addEventListener('click', async () => {
   const button = $('exportButton'); button.disabled = true; button.textContent = '生成中…';
   try {
@@ -218,18 +259,19 @@ $('exportButton').addEventListener('click', async () => {
     await document.fonts.ready;
     card.classList.add('exporting');
     const targetWidth = 1080;
+    const mobile = isMobileBrowser();
+    const desiredScale = targetWidth / card.offsetWidth;
+    const scale = mobile ? Math.min(desiredScale, 2.5) : desiredScale;
     const shot = await html2canvas(card, {
-      scale: targetWidth / card.offsetWidth,
+      scale,
       backgroundColor: '#ffffff',
       useCORS: true,
       logging: false,
     });
-    const link = document.createElement('a');
-    link.download = 'post-studio-' + state.platform + '.png';
-    link.href = shot.toDataURL('image/png');
-    link.click();
-    $('toast').textContent = '图片已保存，可以直接发到小红书';
-  } catch { $('toast').textContent = '保存失败，请稍后再试'; }
+    $('toast').textContent = await saveImage(shot);
+  } catch (error) {
+    $('toast').textContent = error && error.name === 'AbortError' ? '已取消保存' : '保存失败，请稍后再试';
+  }
   finally { card.classList.remove('exporting'); }
   button.disabled = false; button.innerHTML = '<span class="button-icon">↓</span>保存图片';
   $('toast').classList.add('show'); setTimeout(() => $('toast').classList.remove('show'), 2400);
