@@ -41,6 +41,22 @@ function setText(id, value) {
   if (element) element.textContent = value;
 }
 
+function fitCanvas() {
+  const width = card.offsetWidth;
+  if (!width) return;
+  card.style.height = '';
+  card.style.aspectRatio = '3 / 4';
+  const activeCopy = state.platform === 'x' ? $('previewContentX').parentElement : $('previewContentT').parentElement;
+  const bottomReserve = state.platform === 'x' ? 260 : 350;
+  const baseHeight = width * 4 / 3;
+  const contentHeight = activeCopy.scrollHeight + bottomReserve;
+  const targetHeight = Math.max(baseHeight, contentHeight);
+  card.style.aspectRatio = 'auto';
+  card.style.height = Math.ceil(targetHeight) + 'px';
+  const exportHeight = Math.round(targetHeight * 1080 / width);
+  $('dimensionLabel').textContent = '1080 × ' + exportHeight + ' · 自适应画布';
+}
+
 function applyMedia() {
   ['X', 'T'].forEach((suffix) => {
     const box = $('postMedia' + suffix);
@@ -57,6 +73,7 @@ function applyMedia() {
     const displayMode = state.mediaMode === 'auto' ? 'cover' : state.mediaMode;
     image.style.objectFit = displayMode;
     box.style.aspectRatio = platformRatio;
+    image.onload = () => requestAnimationFrame(fitCanvas);
   });
 }
 
@@ -101,6 +118,7 @@ function render() {
   document.querySelectorAll('.swatch').forEach((swatch) => swatch.classList.toggle('active', swatch.dataset.theme === state.theme));
   applyAvatar();
   applyMedia();
+  requestAnimationFrame(fitCanvas);
   if (window.lucide) window.lucide.createIcons();
 }
 
@@ -191,6 +209,7 @@ $('mediaMode').addEventListener('change', (event) => {
 $('toggleStats').addEventListener('click', () => { state.showStats = !state.showStats; render(); });
 $('zoomIn').addEventListener('click', () => { state.zoom = Math.min(1.2, +(state.zoom + .1).toFixed(2)); render(); });
 $('zoomOut').addEventListener('click', () => { state.zoom = Math.max(.8, +(state.zoom - .1).toFixed(2)); render(); });
+window.addEventListener('resize', () => requestAnimationFrame(fitCanvas));
 $('resetButton').addEventListener('click', () => window.location.reload());
 $('exportButton').addEventListener('click', async () => {
   const button = $('exportButton'); button.disabled = true; button.textContent = '生成中…';
@@ -200,7 +219,7 @@ $('exportButton').addEventListener('click', async () => {
     card.classList.add('exporting');
     const targetWidth = 1080;
     const shot = await html2canvas(card, {
-      scale: targetWidth / card.getBoundingClientRect().width,
+      scale: targetWidth / card.offsetWidth,
       backgroundColor: '#ffffff',
       useCORS: true,
       logging: false,
