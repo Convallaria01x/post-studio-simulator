@@ -48,13 +48,14 @@ function fitCanvas() {
   card.style.aspectRatio = '3 / 4';
   const activeCopy = state.platform === 'x' ? $('previewContentX').parentElement : $('previewContentT').parentElement;
   const bottomReserve = state.platform === 'x' ? 300 : 350;
-  const baseHeight = width * 4 / 3;
+  const baseHeight = width * (state.platform === 'x' ? 1438 / 1080 : 2533 / 1220);
   const contentHeight = activeCopy.scrollHeight + bottomReserve;
   const targetHeight = Math.max(baseHeight, contentHeight);
   card.style.aspectRatio = 'auto';
   card.style.height = Math.ceil(targetHeight) + 'px';
   const exportHeight = Math.round(targetHeight * 1080 / width);
-  $('dimensionLabel').textContent = '1080 × ' + exportHeight + ' · 自适应画布';
+  const exportWidth = state.platform === 'x' ? 1080 : 1220;
+  $('dimensionLabel').textContent = exportWidth + ' × ' + exportHeight + ' · 自适应画布';
 }
 
 function applyMedia() {
@@ -264,6 +265,38 @@ async function saveImage(canvas) {
   return mobile ? '图片已打开，请长按图片保存' : '图片已保存，可以直接发到小红书';
 }
 
+async function renderExportCanvas() {
+  const exportWidth = state.platform === 'x' ? 540 : 610;
+  const exportHeight = Math.ceil(card.offsetHeight / card.offsetWidth * exportWidth);
+  const clone = card.cloneNode(true);
+  clone.classList.add('exporting');
+  clone.style.width = exportWidth + 'px';
+  clone.style.minWidth = exportWidth + 'px';
+  clone.style.height = exportHeight + 'px';
+  clone.style.aspectRatio = 'auto';
+  clone.style.position = 'fixed';
+  clone.style.left = '-10000px';
+  clone.style.top = '0';
+  clone.style.transform = 'none';
+  document.body.appendChild(clone);
+  try {
+    await document.fonts.ready;
+    await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+    return await html2canvas(clone, {
+      width: exportWidth,
+      height: exportHeight,
+      scale: 2,
+      backgroundColor: '#ffffff',
+      useCORS: true,
+      logging: false,
+      windowWidth: exportWidth,
+      windowHeight: exportHeight,
+    });
+  } finally {
+    clone.remove();
+  }
+}
+
 async function shareSavedImage() {
   if (!savedBlob) return;
   const filename = $('savePreview').dataset.filename || 'post-studio.png';
@@ -290,18 +323,7 @@ $('exportButton').addEventListener('click', async () => {
   const button = $('exportButton'); button.disabled = true; button.textContent = '生成中…';
   try {
     if (!window.html2canvas) throw new Error('html2canvas is not ready');
-    await document.fonts.ready;
-    card.classList.add('exporting');
-    const targetWidth = 1080;
-    const mobile = isMobileBrowser();
-    const desiredScale = targetWidth / card.offsetWidth;
-    const scale = mobile ? Math.min(desiredScale, 2.5) : desiredScale;
-    const shot = await html2canvas(card, {
-      scale,
-      backgroundColor: '#ffffff',
-      useCORS: true,
-      logging: false,
-    });
+    const shot = await renderExportCanvas();
     $('toast').textContent = await saveImage(shot);
   } catch (error) {
     $('toast').textContent = error && error.name === 'AbortError' ? '已取消保存' : '保存失败，请稍后再试';

@@ -114,3 +114,31 @@ input,textarea{border:1px solid #ece7e0;border-radius:11px;background:#f5f2ed;co
   .brand-mark{display:none}.topbar{padding:0 10px}.brand-copy{margin-right:auto}.ghost-button,.primary-button{padding-left:9px;padding-right:9px}
   .stage-toolbar{padding-left:10px;padding-right:10px}.preview-viewport{padding-left:8px;padding-right:8px}
 }
+
+/* Export uses a fixed 2x render so the saved PNG keeps the reference proportions. */
+.phone-card.platform-x{aspect-ratio:1080 / 1438}
+.phone-card.platform-threads{aspect-ratio:1220 / 2533}
+.phone-card.exporting .x-header{height:78px;padding:26px 30px 0}
+.phone-card.exporting .x-header svg{width:24px;height:24px}
+.phone-card.exporting .x-profile{padding:20px 30px 0}
+.phone-card.exporting .phone-avatar{width:58px;height:58px}
+.phone-card.exporting .phone-profile-meta strong{font-size:19px}
+.phone-card.exporting .phone-profile-meta span{font-size:17px}
+.phone-card.exporting .x-logo{font-size:21px}
+.phone-card.exporting .x-meta{bottom:88px;padding:0 30px;font-size:14px}
+.phone-card.exporting .x-actions{bottom:24px;padding:9px 30px 5px}
+.phone-card.exporting .x-actions svg{width:24px;height:24px;min-width:24px;min-height:24px}
+.phone-card.exporting .threads-header{height:132px;padding:28px 30px 0;grid-template-columns:42px minmax(0,1fr) 98px}
+.phone-card.exporting .threads-header strong{font-size:25px}
+.phone-card.exporting .threads-header span:not(.back-arrow){font-size:17px}
+.phone-card.exporting .threads-header .back-button svg{width:25px;height:25px}
+.phone-card.exporting .header-icons{gap:16px;height:36px}
+.phone-card.exporting .header-icons svg{width:25px;height:25px}
+.phone-card.exporting .thread-profile{padding:18px 30px 12px;gap:16px}
+.phone-card.exporting .threads-screen .phone-avatar{width:58px;height:58px}
+.phone-card.exporting .thread-profile strong{font-size:19px}
+.phone-card.exporting .thread-profile span{font-size:17px}
+.phone-card.exporting .threads-screen .thread-copy{padding:4px 30px 0;font-size:var(--thread-copy-size,15px);line-height:var(--thread-copy-leading,1.48)}
+.phone-card.exporting .thread-actions{padding:14px 30px 12px}
+.phone-card.exporting .thread-actions svg{width:25px;height:25px;min-width:25px;min-height:25px}
+.phone-card.exporting .thread-dynamics{font-size:17px;padding:13px 30px}
