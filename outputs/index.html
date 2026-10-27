@@ -42,16 +42,12 @@
       </div>
       <div class="field-group">
         <label for="content">正文 <span class="counter" id="charCount">0 / 280</span></label>
-        <textarea id="content" maxlength="1000" rows="8">开播以来充植和时字经历的每一场风波，我们作为局外人，无权对此评价太多，但是就好像越是寒冷的天气就越能感受到被窝的温暖——我对两个人的感受，是离不开这个爱意消亡的大冰河世纪的，毕竟越是冷的时候，你越知道温暖的人在哪里。
-
-就好像他俩拍检察官那个时候是冬天。允植说两个人的关系更像春天，但如果没有那时曾经经历的寒冷，他怎么能和时字迎来春天呢？
-
-所以想到今年的初雪是真的很有意义，和同一个人一起，再重新感受一次冰天雪地里的温度吧</textarea>
+        <textarea id="content" maxlength="1000" rows="8" placeholder="输入正文，画布会自动排版"></textarea>
         <div class="quick-chips"><button type="button" data-insert="✦ ">✦ 加符号</button><button type="button" data-insert="\n\n# 记录一下"># 加话题</button><button type="button" data-insert="\n\n—— 林默">署名</button></div>
       </div>
       <div class="field-row">
         <div class="field-group compact"><label for="dateText">日期 / 时间</label><input id="dateText" value="16:31 · 2026/10/16" maxlength="30" /></div>
-        <div class="field-group compact"><label for="viewText">浏览量</label><input id="viewText" value="4 次查看" maxlength="20" /></div>
+        <div class="field-group compact"><label for="viewText">浏览量</label><input id="viewText" value="0 次查看" maxlength="20" /></div>
       </div>
       <div class="field-group threads-only-field">
         <label for="threadTitleInput">Threads 页面标题 / 时间</label>
@@ -60,12 +56,12 @@
       <div class="field-group">
         <div class="label-line"><label>互动数据</label><button class="link-button" id="toggleStats" type="button">隐藏</button></div>
         <div class="stats-grid" id="statsGrid">
-          <input id="likes" value="21" aria-label="喜欢数" /><input id="replies" value="8" aria-label="回复数" /><input id="reposts" value="1" aria-label="转发数" /><input id="shares" value="0" aria-label="分享数" />
+          <input id="likes" value="0" aria-label="喜欢数" /><input id="replies" value="0" aria-label="回复数" /><input id="reposts" value="0" aria-label="转发数" /><input id="shares" value="0" aria-label="分享数" />
         </div>
       </div>
       <div class="field-group threads-only-field">
         <label for="threadViewText">Threads 浏览量</label>
-        <input id="threadViewText" value="697 次观看" maxlength="20" />
+        <input id="threadViewText" value="0 次观看" maxlength="20" />
       </div>
       <div class="field-group">
         <div class="label-line"><label>视觉风格</label><span class="muted">实时生效</span></div>
@@ -95,7 +91,7 @@
               </div>
               <div class="x-copy" id="previewContentX"></div>
               <div class="x-meta"><span id="previewDateX">12:42 · 2026/10/19</span><span>·</span><b id="previewViewX">1 次查看</b></div>
-              <div class="x-actions" id="xActions"><span><i data-lucide="message-circle"></i><b id="previewRepliesX">1</b></span><span><i data-lucide="repeat-2"></i></span><span><i data-lucide="heart"></i></span><span><i data-lucide="bookmark"></i></span><span><i data-lucide="share"></i></span></div>
+              <div class="x-actions" id="xActions"><span><i data-lucide="message-circle"></i></span><span><i data-lucide="repeat-2"></i></span><span><i data-lucide="heart"></i></span><span><i data-lucide="bookmark"></i></span><span><i data-lucide="share"></i></span></div>
             </div>
             <div class="threads-screen" id="threadsScreen">
               <div class="threads-status"><span>7:37</span><span class="status-icons"><em>VPN</em><span class="signal-group">5GA<i data-lucide="signal-high"></i></span><span class="signal-group">5G<i data-lucide="signal-high"></i></span><i data-lucide="wifi"></i><b>85</b><i data-lucide="zap"></i></span></div>
@@ -105,7 +101,7 @@
                 <div><strong id="previewNameT">convallaria_01</strong><span id="threadAge">2 小时</span></div>
               </div>
               <div class="thread-copy" id="previewContentT"></div>
-              <div class="thread-actions" id="threadActions"><span><i data-lucide="heart"></i><b id="previewLikesT">21</b></span><span><i data-lucide="message-circle"></i></span><span><i data-lucide="repeat-2"></i></span><span><i data-lucide="send"></i><b id="previewSharesT">1</b></span><span><i data-lucide="chart-no-axes-column-increasing"></i></span></div>
+              <div class="thread-actions" id="threadActions"><span><i data-lucide="heart"></i></span><span><i data-lucide="message-circle"></i></span><span><i data-lucide="repeat-2"></i></span><span><i data-lucide="send"></i></span><span><i data-lucide="chart-no-axes-column-increasing"></i></span></div>
               <div class="thread-divider"></div><div class="thread-dynamics">查看动态　›</div>
               <div class="thread-compose"><div class="small-avatar"><img id="avatarImageCompose" alt="" /></div><span>添加到串文</span><b><i data-lucide="image"></i><strong>GIF</strong><i data-lucide="expand"></i></b></div>
               <div class="thread-systembar"><span></span></div>
@@ -113,7 +109,7 @@
           </article>
         </div>
       </div>
-      <div class="stage-footer"><span id="dimensionLabel">1080 × 1920</span><span>仿真实手机截图 · 适合小红书</span></div>
+      <div class="stage-footer"><span id="dimensionLabel">1080 × 1440 · 3:4</span><span>自适应排版 · 适合小红书</span></div>
     </section>
   </main>
   <div class="toast" id="toast" role="status">图片已保存</div>
