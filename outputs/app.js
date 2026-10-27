@@ -5,7 +5,7 @@ const state = {
   showStats: true,
   zoom: 1,
   avatar: '',
-  avatarZoom: 100,
+  avatarZoom: 120,
   avatarX: 50,
   avatarY: 50,
   drafts: {
@@ -81,14 +81,19 @@ function render() {
 }
 
 function applyAvatar() {
+  const zoom = state.avatarZoom;
+  const offset = (100 - zoom);
   ['X', 'T'].forEach((suffix) => {
     const img = $('avatarImage' + suffix);
     const fallback = $('avatarFallback' + suffix);
     if (state.avatar) {
       img.src = state.avatar;
       img.style.display = 'block';
-      img.style.objectPosition = state.avatarX + '% ' + state.avatarY + '%';
-      img.style.transform = 'scale(' + (state.avatarZoom / 100) + ')';
+      img.style.width = zoom + '%';
+      img.style.height = zoom + '%';
+      img.style.left = (offset * state.avatarX / 100) + '%';
+      img.style.top = (offset * state.avatarY / 100) + '%';
+      img.style.transform = 'none';
       fallback.style.display = 'none';
     }
     else { img.removeAttribute('src'); img.style.display = 'none'; fallback.style.display = 'grid'; fallback.textContent = data().name.charAt(0); }
@@ -97,8 +102,11 @@ function applyAvatar() {
   if (state.avatar) {
     compose.src = state.avatar;
     compose.style.display = 'block';
-    compose.style.objectPosition = state.avatarX + '% ' + state.avatarY + '%';
-    compose.style.transform = 'scale(' + (state.avatarZoom / 100) + ')';
+    compose.style.width = zoom + '%';
+    compose.style.height = zoom + '%';
+    compose.style.left = (offset * state.avatarX / 100) + '%';
+    compose.style.top = (offset * state.avatarY / 100) + '%';
+    compose.style.transform = 'none';
   } else compose.style.display = 'none';
   $('avatarZoomValue').textContent = state.avatarZoom + '%';
   $('avatarXValue').textContent = state.avatarX + '%';
@@ -123,7 +131,17 @@ $('avatarInput').addEventListener('change', (event) => {
   const file = event.target.files[0]; if (!file) return;
   const reader = new FileReader(); reader.onload = () => { state.avatar = reader.result; render(); }; reader.readAsDataURL(file);
 });
-$('clearAvatar').addEventListener('click', () => { state.avatar = ''; $('avatarInput').value = ''; render(); });
+$('clearAvatar').addEventListener('click', () => {
+  state.avatar = '';
+  state.avatarZoom = 120;
+  state.avatarX = 50;
+  state.avatarY = 50;
+  $('avatarInput').value = '';
+  $('avatarZoom').value = 120;
+  $('avatarX').value = 50;
+  $('avatarY').value = 50;
+  render();
+});
 ['avatarZoom', 'avatarX', 'avatarY'].forEach((id) => $(id).addEventListener('input', () => {
   state.avatarZoom = Number($('avatarZoom').value);
   state.avatarX = Number($('avatarX').value);
