@@ -25,34 +25,47 @@
         <span class="status-dot" title="实时预览已开启"></span>
       </div>
       <div class="field-group">
-        <label>模拟器</label>
-        <div class="segmented" role="tablist" aria-label="模拟器选择">
-          <button class="platform-tab active" data-platform="x" role="tab" type="button">X / Twitter</button>
-          <button class="platform-tab" data-platform="threads" role="tab" type="button">Threads</button>
-          <button class="platform-tab" data-platform="note" role="tab" type="button">极简长文</button>
+        <label>界面模板</label>
+        <div class="segmented" role="tablist" aria-label="界面模板选择">
+          <button class="platform-tab active" data-platform="x" role="tab" type="button">X 帖子</button>
+          <button class="platform-tab" data-platform="threads" role="tab" type="button">Threads 串文</button>
         </div>
       </div>
       <div class="field-group">
         <label for="displayName">显示名称</label>
-        <input id="displayName" value="林默" maxlength="28" />
-        <div class="handle-row"><input id="handle" value="linmo.notes" maxlength="28" /><span>用户名</span></div>
+        <input id="displayName" value="李见" maxlength="28" />
+        <div class="handle-row"><input id="handle" value="ordnorii" maxlength="28" /><span>用户名</span></div>
+      </div>
+      <div class="field-group">
+        <label for="avatarInput">头像</label>
+        <div class="file-row"><input id="avatarInput" type="file" accept="image/*" /><button id="clearAvatar" class="mini-button" type="button">清除</button></div>
       </div>
       <div class="field-group">
         <label for="content">正文 <span class="counter" id="charCount">0 / 280</span></label>
-        <textarea id="content" maxlength="560" rows="7">真正让人变强的，不是某一次“开窍”，而是你愿意在没人看见的时候，把一件小事重复很多遍。
+        <textarea id="content" maxlength="1000" rows="8">开播以来充植和时字经历的每一场风波，我们作为局外人，无权对此评价太多，但是就好像越是寒冷的天气就越能感受到被窝的温暖——我对两个人的感受，是离不开这个爱意消亡的大冰河世纪的，毕竟越是冷的时候，你越知道温暖的人在哪里。
 
-慢一点没关系。稳定地向前，已经是很稀缺的能力。</textarea>
+就好像他俩拍检察官那个时候是冬天。允植说两个人的关系更像春天，但如果没有那时曾经经历的寒冷，他怎么能和时字迎来春天呢？
+
+所以想到今年的初雪是真的很有意义，和同一个人一起，再重新感受一次冰天雪地里的温度吧</textarea>
         <div class="quick-chips"><button type="button" data-insert="✦ ">✦ 加符号</button><button type="button" data-insert="\n\n# 记录一下"># 加话题</button><button type="button" data-insert="\n\n—— 林默">署名</button></div>
       </div>
       <div class="field-row">
-        <div class="field-group compact"><label for="dateText">日期</label><input id="dateText" value="10月27日 · 21:16" maxlength="26" /></div>
-        <div class="field-group compact"><label for="locationText">地点</label><input id="locationText" value="杭州" maxlength="14" /></div>
+        <div class="field-group compact"><label for="dateText">日期 / 时间</label><input id="dateText" value="12:42 · 2026/10/19" maxlength="30" /></div>
+        <div class="field-group compact"><label for="viewText">浏览量</label><input id="viewText" value="1 次查看" maxlength="20" /></div>
+      </div>
+      <div class="field-group threads-only-field">
+        <label for="threadTitleInput">Threads 页面标题 / 时间</label>
+        <div class="field-row"><input id="threadTitleInput" value="中文" maxlength="12" /><input id="threadAgeInput" value="2 小时" maxlength="12" /></div>
       </div>
       <div class="field-group">
         <div class="label-line"><label>互动数据</label><button class="link-button" id="toggleStats" type="button">隐藏</button></div>
         <div class="stats-grid" id="statsGrid">
-          <input id="replies" value="24" aria-label="回复数" /><input id="reposts" value="86" aria-label="转发数" /><input id="likes" value="1,248" aria-label="喜欢数" />
+          <input id="likes" value="21" aria-label="喜欢数" /><input id="replies" value="8" aria-label="回复数" /><input id="reposts" value="1" aria-label="转发数" /><input id="shares" value="0" aria-label="分享数" />
         </div>
+      </div>
+      <div class="field-group threads-only-field">
+        <label for="threadViewText">Threads 浏览量</label>
+        <input id="threadViewText" value="697 次观看" maxlength="20" />
       </div>
       <div class="field-group">
         <div class="label-line"><label>视觉风格</label><span class="muted">实时生效</span></div>
@@ -63,35 +76,46 @@
           <button class="swatch mint" data-theme="mint" aria-label="薄荷绿" type="button"></button>
         </div>
       </div>
-      <div class="tip"><span class="tip-star">✦</span><span>拖动右侧预览区域也可以调整画布位置</span></div>
+      <div class="tip"><span class="tip-star">✦</span><span>预览会按照真实手机页面比例导出图片</span></div>
     </aside>
     <section class="preview-stage">
       <div class="stage-toolbar">
-        <div class="stage-label"><span class="live-pulse"></span><span id="platformLabel">X / Twitter</span><small>LIVE PREVIEW</small></div>
+        <div class="stage-label"><span class="live-pulse"></span><span id="platformLabel">X 帖子</span><small>LIVE PREVIEW</small></div>
         <div class="zoom-controls"><button id="zoomOut" type="button" aria-label="缩小">−</button><span id="zoomValue">100%</span><button id="zoomIn" type="button" aria-label="放大">＋</button></div>
       </div>
       <div class="preview-viewport" id="previewViewport">
         <div class="canvas-wrap" id="canvasWrap">
-          <article class="social-card theme-paper platform-x" id="socialCard">
-            <div class="card-topline"><span id="platformGlyph" class="platform-glyph">𝕏</span><span class="card-menu">•••</span></div>
-            <div class="profile-row">
-              <div class="avatar" id="avatar">林</div>
-              <div class="profile-meta"><strong id="previewName">林默</strong><span>@<span id="previewHandle">linmo.notes</span></span></div>
-              <button class="follow-button" type="button">关注</button>
+          <article class="phone-card theme-paper platform-x" id="socialCard">
+            <div class="x-screen" id="xScreen">
+              <div class="x-header"><span class="back-arrow">←</span><strong>帖子</strong><span class="more">•••</span></div>
+              <div class="x-profile">
+                <div class="phone-avatar"><img id="avatarImageX" alt="" /><span id="avatarFallbackX">李</span></div>
+                <div class="phone-profile-meta"><strong id="previewNameX">李见</strong><span>@<span id="previewHandleX">ordnorii</span></span></div>
+                <span class="x-logo">𝕏.com</span>
+              </div>
+              <div class="x-copy" id="previewContentX"></div>
+              <div class="x-meta"><span id="previewDateX">12:42 · 2026/10/19</span><span>·</span><b id="previewViewX">1 次查看</b></div>
+              <div class="x-actions" id="xActions"><span>◯</span><span>⇄</span><span>♡</span><span>▱</span><span>↥</span></div>
             </div>
-            <div class="post-copy" id="previewContent"></div>
-            <div class="post-meta"><span id="previewDate">10月27日 · 21:16</span><span class="meta-separator">·</span><span id="previewLocation">杭州</span><span class="meta-separator">·</span><span id="platformMeta">来自 X</span></div>
-            <div class="post-rule"></div>
-            <div class="engagement" id="engagement">
-              <span><i class="icon">○</i><b id="previewReplies">24</b></span><span><i class="icon">↗</i><b id="previewReposts">86</b></span><span><i class="icon heart">♡</i><b id="previewLikes">1,248</b></span><span><i class="icon">⌁</i></span>
+            <div class="threads-screen" id="threadsScreen">
+              <div class="threads-status"><span>7:37</span><span>VPN&nbsp; 5GA ▮▮ 5G ▮▮ ◔ <b>85</b> ⚡</span></div>
+              <div class="threads-header"><span class="back-arrow">←</span><div><strong id="threadTitle">中文</strong><span id="threadViews">697 次观看　›</span></div><span class="header-icons">♧　•••</span></div>
+              <div class="thread-profile">
+                <div class="phone-avatar"><img id="avatarImageT" alt="" /><span id="avatarFallbackT">李</span></div>
+                <div><strong id="previewNameT">convallaria_01</strong><span id="threadAge">2 小时</span></div>
+              </div>
+              <div class="thread-copy" id="previewContentT"></div>
+              <div class="thread-actions" id="threadActions"><span>♡ <b id="previewLikesT">21</b></span><span>◯</span><span>↻</span><span>▷ <b id="previewSharesT">1</b></span><span>▥</span></div>
+              <div class="thread-divider"></div><div class="thread-dynamics">查看动态　›</div>
+              <div class="thread-compose"><div class="small-avatar"><img id="avatarImageCompose" alt="" /></div><span>添加到串文</span><b>▣　GIF　↗</b></div>
             </div>
           </article>
         </div>
       </div>
-      <div class="stage-footer"><span>1080 × 1350</span><span>适合小红书 / 朋友圈配图</span></div>
+      <div class="stage-footer"><span id="dimensionLabel">1080 × 1920</span><span>仿真实手机截图 · 适合小红书</span></div>
     </section>
   </main>
-  <div class="toast" id="toast" role="status">预览已复制到剪贴板</div>
+  <div class="toast" id="toast" role="status">图片已保存</div>
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   <script src="app.js"></script>
 </body>
