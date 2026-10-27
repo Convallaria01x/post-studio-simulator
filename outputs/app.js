@@ -9,7 +9,7 @@ const state = {
   avatarX: 50,
   avatarY: 50,
   media: '',
-  mediaMode: 'cover',
+  mediaMode: 'auto',
   drafts: {
     x: '',
     threads: '',
@@ -53,8 +53,10 @@ function applyMedia() {
       return;
     }
     if (image.src !== state.media) image.src = state.media;
-    image.style.objectFit = state.mediaMode;
-    box.style.aspectRatio = '3 / 4';
+    const platformRatio = state.platform === 'x' ? '3 / 4' : '4 / 5';
+    const displayMode = state.mediaMode === 'auto' ? 'cover' : state.mediaMode;
+    image.style.objectFit = displayMode;
+    box.style.aspectRatio = platformRatio;
   });
 }
 
@@ -87,6 +89,8 @@ function render() {
   card.style.setProperty('--x-copy-leading', (textLength > 220 ? 1.35 : 1.5).toString());
   card.style.setProperty('--thread-copy-size', threadSize + 'px');
   card.style.setProperty('--thread-copy-leading', (textLength > 180 ? 1.34 : 1.5).toString());
+  const mediaWidth = textLength > 180 ? 220 : (textLength > 100 ? 260 : 300);
+  card.style.setProperty('--media-width', mediaWidth + 'px');
   $('toggleStats').textContent = state.showStats ? '隐藏' : '显示';
   $('xActions').style.display = state.showStats ? '' : 'none';
   $('threadActions').style.display = state.showStats ? '' : 'none';
