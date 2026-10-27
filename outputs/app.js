@@ -47,7 +47,7 @@ function fitCanvas() {
   card.style.height = '';
   card.style.aspectRatio = '3 / 4';
   const activeCopy = state.platform === 'x' ? $('previewContentX').parentElement : $('previewContentT').parentElement;
-  const bottomReserve = state.platform === 'x' ? 260 : 350;
+  const bottomReserve = state.platform === 'x' ? 300 : 350;
   const baseHeight = width * 4 / 3;
   const contentHeight = activeCopy.scrollHeight + bottomReserve;
   const targetHeight = Math.max(baseHeight, contentHeight);
