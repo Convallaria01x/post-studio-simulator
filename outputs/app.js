@@ -62,8 +62,8 @@ function render() {
   $('platformLabel').textContent = state.platform === 'x' ? 'X 帖子' : 'Threads 串文';
   $('dimensionLabel').textContent = '1080 × 1440 · 3:4';
   const textLength = Math.max(d.content.length, 1);
-  const xSize = Math.max(13, Math.min(22, 5200 / textLength));
-  const threadSize = Math.max(13, Math.min(21, 5000 / textLength));
+  const xSize = Math.max(12, Math.min(17, 3800 / textLength));
+  const threadSize = Math.max(12, Math.min(17, 3600 / textLength));
   card.style.setProperty('--x-copy-size', xSize + 'px');
   card.style.setProperty('--x-copy-leading', (textLength > 220 ? 1.35 : 1.5).toString());
   card.style.setProperty('--thread-copy-size', threadSize + 'px');
