@@ -46,24 +46,21 @@ function fitCanvas() {
   if (!width) return;
   card.style.height = '';
   card.style.aspectRatio = '3 / 4';
-  const activeCopy = state.platform === 'x' ? $('previewContentX').parentElement : $('previewContentT').parentElement;
-  const bottomReserve = state.platform === 'x' ? 300 : 180;
-  const baseHeight = width * (state.platform === 'x' ? 1438 / 1080 : 2533 / 1220);
-  let contentHeight = activeCopy.scrollHeight + bottomReserve;
-  if (state.platform === 'threads') {
-    const screen = $('threadsScreen');
-    const cardTop = card.getBoundingClientRect().top;
-    const dynamics = screen.querySelector('.thread-dynamics');
-    if (dynamics) {
-      const dynamicsBottom = dynamics.getBoundingClientRect().bottom - cardTop;
-      contentHeight = dynamicsBottom + bottomReserve;
-    }
-  }
-  const targetHeight = Math.max(baseHeight, contentHeight);
+  const screen = state.platform === 'x' ? $('xScreen') : $('threadsScreen');
+  const cardTop = card.getBoundingClientRect().top;
+  const lastFlowItem = Array.from(screen.children)
+    .filter((element) => getComputedStyle(element).display !== 'none')
+    .pop();
+  const flowBottom = lastFlowItem
+    ? lastFlowItem.getBoundingClientRect().bottom - cardTop
+    : width * 0.8;
+  const bottomReserve = state.platform === 'x' ? 24 : 28;
+  const minimumHeight = width * (state.platform === 'x' ? 0.95 : 0.9);
+  const targetHeight = Math.max(minimumHeight, flowBottom + bottomReserve);
   card.style.aspectRatio = 'auto';
   card.style.height = Math.ceil(targetHeight) + 'px';
-  const exportHeight = Math.round(targetHeight * 1080 / width);
   const exportWidth = state.platform === 'x' ? 1080 : 1220;
+  const exportHeight = Math.round(targetHeight * exportWidth / width);
   $('dimensionLabel').textContent = exportWidth + ' × ' + exportHeight + ' · 自适应画布';
 }
 

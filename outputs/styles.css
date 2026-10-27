@@ -160,3 +160,17 @@ input,textarea{border:1px solid #ece7e0;border-radius:11px;background:#f5f2ed;co
 .threads-screen .thread-actions{margin-top:0}
 .threads-screen .thread-divider{width:100%}
 .threads-screen .thread-dynamics{margin-bottom:0}
+
+/* Both templates use a natural content flow. The card height is measured by
+   JavaScript, so fixed/absolute content positioning only creates fake gaps. */
+.x-screen{display:flex;flex-direction:column;height:auto!important;min-height:0;overflow:visible}
+.x-screen .x-header,
+.x-screen .x-profile,
+.x-screen .x-copy,
+.x-screen .x-meta,
+.x-screen .x-actions{flex:0 0 auto}
+.x-screen .x-copy{height:auto!important;min-height:0!important;overflow:visible}
+.x-screen .x-meta{position:static;min-height:0;margin-top:12px;padding-top:0}
+.x-screen .x-actions{position:static;min-height:0;margin-top:12px;padding-bottom:18px}
+.threads-screen{height:auto!important;min-height:0;overflow:visible}
+.phone-card{overflow:hidden}
