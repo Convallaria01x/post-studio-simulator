@@ -19,7 +19,7 @@ function data() {
     name: $('displayName').value.trim() || '空想泡芙',
     handle: $('handle').value.trim().replace(/^@/, '') || 'floppetharyn',
     content: $('content').value,
-    date: $('dateText').value.trim() || '16:31 · 2026/10/16',
+    date: $('dateText').value.trim() || '13:14 · 2033/12/31',
     views: $('viewText').value.trim() || '0 次查看',
     threadViews: $('threadViewText').value.trim() || '0 次观看',
     threadTitle: $('threadTitleInput').value.trim() || '串文',
@@ -44,7 +44,7 @@ function render() {
   setText('previewDateX', d.date);
   setText('previewViewX', d.views);
   setText('previewRepliesX', d.replies);
-  setText('previewNameT', 'convallaria_01');
+  setText('previewNameT', d.name);
   setText('previewContentT', d.content);
   setText('threadViews', d.threadViews + '　›');
   setText('threadTitle', d.threadTitle);
