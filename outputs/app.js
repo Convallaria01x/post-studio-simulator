@@ -1,3 +1,4 @@
+const $ = (id) => document.getElementById(id);
 const state = {
   platform: 'x',
   theme: 'paper',
@@ -9,7 +10,6 @@ const state = {
     threads: '其实我一直在等\n有没有签售姐问他俩喜欢对方的哪张小卡\n或者哪个造型\n图可能会精选一些自己满意的小卡送给他哥\n壮没准还会指定要哪张…\n我一想到两个人家里还会有卡册\n没事的时候一起贴一下\n萌鼠了…',
   },
 };
-const $ = (id) => document.getElementById(id);
 const card = $('socialCard');
 
 function data() {
