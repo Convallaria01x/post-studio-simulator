@@ -47,9 +47,18 @@ function fitCanvas() {
   card.style.height = '';
   card.style.aspectRatio = '3 / 4';
   const activeCopy = state.platform === 'x' ? $('previewContentX').parentElement : $('previewContentT').parentElement;
-  const bottomReserve = state.platform === 'x' ? 300 : 350;
+  const bottomReserve = state.platform === 'x' ? 300 : 180;
   const baseHeight = width * (state.platform === 'x' ? 1438 / 1080 : 2533 / 1220);
-  const contentHeight = activeCopy.scrollHeight + bottomReserve;
+  let contentHeight = activeCopy.scrollHeight + bottomReserve;
+  if (state.platform === 'threads') {
+    const screen = $('threadsScreen');
+    const cardTop = card.getBoundingClientRect().top;
+    const dynamics = screen.querySelector('.thread-dynamics');
+    if (dynamics) {
+      const dynamicsBottom = dynamics.getBoundingClientRect().bottom - cardTop;
+      contentHeight = dynamicsBottom + bottomReserve;
+    }
+  }
   const targetHeight = Math.max(baseHeight, contentHeight);
   card.style.aspectRatio = 'auto';
   card.style.height = Math.ceil(targetHeight) + 'px';
