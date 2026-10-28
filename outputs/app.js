@@ -304,38 +304,19 @@ function openSaveSheet(blob, filename) {
     $('shareSavedImage').textContent = '存储到照片 / 分享';
   } else if (/Android/i.test(navigator.userAgent || '')) {
     $('saveGuidance').textContent = isQuarkBrowser()
-      ? '夸克：请直接长按弹窗里的预览图，选择“保存图片 / 保存到相册”。不要打开新页面。'
-      : '安卓：请点“打开原图”，长按图片并选“保存图片”；“下载图片”只会进入下载目录。';
+      ? '夸克：下载后在夸克下载记录中打开图片；如需显示到相册，请从记录中选择“保存到相册”。'
+      : '安卓：下载图片后，可在下载记录中打开并保存到相册。';
     downloadLink.textContent = isQuarkBrowser() ? '下载图片到夸克下载目录' : '下载图片（到下载目录）';
-    $('openSavedImage').textContent = isQuarkBrowser() ? '定位预览图并长按存相册' : '打开原图 / 长按保存';
     $('shareSavedImage').textContent = '打开系统分享';
     $('shareSavedImage').hidden = isQuarkBrowser();
   } else {
     $('saveGuidance').textContent = '下载后的 PNG 图片可在设备的下载记录或文件管理中找到。';
     downloadLink.textContent = '下载图片';
-    $('openSavedImage').hidden = false;
     $('shareSavedImage').hidden = false;
     $('shareSavedImage').textContent = '打开系统分享';
   }
   $('saveSheet').classList.add('open');
   $('saveSheet').setAttribute('aria-hidden', 'false');
-}
-
-function openSavedImageInTab() {
-  if (!savedPreviewUrl) return false;
-  if (isQuarkBrowser()) {
-    const preview = $('savePreview');
-    preview.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    $('toast').textContent = '请直接长按弹窗里的预览图，选择“保存图片 / 保存到相册”';
-    return true;
-  }
-  const opened = window.open(savedPreviewUrl, '_blank');
-  if (!opened) {
-    $('toast').textContent = '夸克拦截了原图页面，请直接点“下载图片”';
-    return false;
-  }
-  $('toast').textContent = '原图已在新页面打开，请长按图片选择“保存图片 / 保存到相册”';
-  return true;
 }
 
 function closeSaveSheet() {
@@ -438,7 +419,7 @@ async function renderExportCanvas() {
 
 async function shareSavedImage() {
   if (!savedBlob || shareInProgress) return false;
-  if (isQuarkBrowser()) return openSavedImageInTab();
+  if (isQuarkBrowser()) return triggerImageDownload();
   shareInProgress = true;
   const button = $('shareSavedImage');
   button.disabled = true;
@@ -468,18 +449,18 @@ async function shareSavedImage() {
     shareInProgress = false;
     button.disabled = false;
   }
-  return isMobileBrowser() ? openSavedImageInTab() : triggerImageDownload();
+  return triggerImageDownload();
 }
 
 $('closeSaveSheet').addEventListener('click', closeSaveSheet);
 $('closeSaveSheetButton').addEventListener('click', closeSaveSheet);
 $('shareSavedImage').addEventListener('click', shareSavedImage);
-$('openSavedImage').addEventListener('click', openSavedImageInTab);
 $('downloadSavedImage').addEventListener('click', (event) => {
   if (!savedPreviewUrl) return;
   event.preventDefault();
   if (isAppleMobileBrowser()) {
-    openSavedImageInTab();
+    const opened = window.open(savedPreviewUrl, '_blank');
+    if (!opened) window.location.href = savedPreviewUrl;
     return;
   }
   triggerImageDownload();
