@@ -274,15 +274,6 @@ function canvasToBlob(canvas) {
   });
 }
 
-function blobToDataUrl(blob) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(typeof reader.result === 'string' ? reader.result : '');
-    reader.onerror = () => reject(reader.error || new Error('图片读取失败'));
-    reader.readAsDataURL(blob);
-  });
-}
-
 function ensureHtml2Canvas() {
   if (window.html2canvas) return Promise.resolve(window.html2canvas);
   return new Promise((resolve, reject) => {
@@ -296,29 +287,16 @@ function ensureHtml2Canvas() {
 
 let savedBlob = null;
 let savedPreviewUrl = '';
-let savedDataUrl = '';
 let shareInProgress = false;
 
-async function openSaveSheet(blob, filename) {
+function openSaveSheet(blob, filename) {
   savedBlob = blob;
   if (savedPreviewUrl) URL.revokeObjectURL(savedPreviewUrl);
   savedPreviewUrl = URL.createObjectURL(blob);
-  savedDataUrl = '';
-  if (isQuarkBrowser()) {
-    try {
-      savedDataUrl = await Promise.race([
-        blobToDataUrl(blob),
-        new Promise((_, reject) => setTimeout(() => reject(new Error('图片转换超时')), 10000)),
-      ]);
-    } catch (error) {
-      savedDataUrl = '';
-    }
-  }
-  const imageUrl = savedDataUrl || savedPreviewUrl;
-  $('savePreview').src = imageUrl;
+  $('savePreview').src = savedPreviewUrl;
   $('savePreview').dataset.filename = filename;
   const downloadLink = $('downloadSavedImage');
-  downloadLink.href = imageUrl;
+  downloadLink.href = savedPreviewUrl;
   downloadLink.download = filename;
   if (isAppleMobileBrowser()) {
     $('saveGuidance').textContent = 'iPhone：点“打开系统分享”，再选“存储图像”即可保存到照片。';
@@ -341,11 +319,10 @@ async function openSaveSheet(blob, filename) {
 }
 
 function openSavedImageInTab() {
-  const imageUrl = savedDataUrl || savedPreviewUrl;
-  if (!imageUrl) return false;
-  const opened = window.open(imageUrl, '_blank');
+  if (!savedPreviewUrl) return false;
+  const opened = window.open(savedPreviewUrl, '_blank');
   if (!opened) {
-    $('toast').textContent = '夸克拦截了新页面，请使用“下载图片”后从下载记录打开';
+    $('toast').textContent = '夸克拦截了原图页面，请直接点“下载图片”';
     return false;
   }
   $('toast').textContent = '原图已在新页面打开，请长按图片选择“保存图片 / 保存到相册”';
@@ -357,7 +334,6 @@ function closeSaveSheet() {
   $('saveSheet').setAttribute('aria-hidden', 'true');
   if (savedPreviewUrl) URL.revokeObjectURL(savedPreviewUrl);
   savedPreviewUrl = '';
-  savedDataUrl = '';
   savedBlob = null;
   shareInProgress = false;
   $('savePreview').removeAttribute('src');
@@ -365,11 +341,10 @@ function closeSaveSheet() {
 }
 
 function triggerImageDownload() {
-  const imageUrl = savedDataUrl || savedPreviewUrl;
-  if (!savedBlob || !imageUrl) return false;
+  if (!savedBlob || !savedPreviewUrl) return false;
   const filename = $('savePreview').dataset.filename || 'post-studio.png';
   const link = document.createElement('a');
-  link.href = imageUrl;
+  link.href = savedPreviewUrl;
   link.download = filename;
   link.rel = 'noopener';
   link.style.position = 'fixed';
@@ -386,7 +361,7 @@ async function saveImage(canvas) {
   const filename = 'post-studio-' + state.platform + '.png';
   const mobile = isMobileBrowser();
   if (mobile) {
-    await openSaveSheet(blob, filename);
+    openSaveSheet(blob, filename);
     return '图片已生成，请选择保存方式';
   }
   const url = URL.createObjectURL(blob);
@@ -494,7 +469,7 @@ $('openSavedImage').addEventListener('click', openSavedImageInTab);
 $('downloadSavedImage').addEventListener('click', (event) => {
   if (!savedPreviewUrl) return;
   event.preventDefault();
-  if (isAppleMobileBrowser() || isQuarkBrowser()) {
+  if (isAppleMobileBrowser()) {
     openSavedImageInTab();
     return;
   }
