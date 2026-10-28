@@ -241,6 +241,10 @@ function isAppleMobileBrowser() {
     || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 }
 
+function isQuarkBrowser() {
+  return /Quark|夸克/i.test(navigator.userAgent || '');
+}
+
 function dataUrlToBlob(dataUrl) {
   const parts = dataUrl.split(',');
   const mime = (parts[0].match(/:(.*?);/) || [])[1] || 'image/png';
@@ -299,8 +303,11 @@ function openSaveSheet(blob, filename) {
     downloadLink.textContent = '打开图片';
     $('shareSavedImage').textContent = '存储到照片 / 分享';
   } else if (/Android/i.test(navigator.userAgent || '')) {
-    $('saveGuidance').textContent = '安卓 / 夸克：下载会进入下载目录，不会自动出现在相册。请在夸克下载记录打开图片并选“保存到相册”；若没有该选项，可在文件管理中将 PNG 移到 Pictures。';
+    $('saveGuidance').textContent = isQuarkBrowser()
+      ? '夸克：请点“打开原图”，在图片页长按图片并选“保存图片 / 保存到相册”。“下载图片”只会进入下载目录。'
+      : '安卓：请点“打开原图”，长按图片并选“保存图片”；“下载图片”只会进入下载目录。';
     downloadLink.textContent = '下载图片（到下载目录）';
+    $('openSavedImage').textContent = '打开原图 / 长按保存';
     $('shareSavedImage').textContent = '打开系统分享';
   } else {
     $('saveGuidance').textContent = '下载后的 PNG 图片可在设备的下载记录或文件管理中找到。';
@@ -309,6 +316,14 @@ function openSaveSheet(blob, filename) {
   }
   $('saveSheet').classList.add('open');
   $('saveSheet').setAttribute('aria-hidden', 'false');
+}
+
+function openSavedImageInTab() {
+  if (!savedPreviewUrl) return false;
+  const opened = window.open(savedPreviewUrl, '_blank', 'noopener');
+  if (!opened) window.location.href = savedPreviewUrl;
+  $('toast').textContent = '原图已打开，请长按图片选择“保存图片 / 保存到相册”';
+  return true;
 }
 
 function closeSaveSheet() {
@@ -436,12 +451,13 @@ async function shareSavedImage() {
     shareInProgress = false;
     button.disabled = false;
   }
-  return triggerImageDownload();
+  return isMobileBrowser() ? openSavedImageInTab() : triggerImageDownload();
 }
 
 $('closeSaveSheet').addEventListener('click', closeSaveSheet);
 $('closeSaveSheetButton').addEventListener('click', closeSaveSheet);
 $('shareSavedImage').addEventListener('click', shareSavedImage);
+$('openSavedImage').addEventListener('click', openSavedImageInTab);
 $('downloadSavedImage').addEventListener('click', (event) => {
   if (!savedPreviewUrl) return;
   event.preventDefault();
