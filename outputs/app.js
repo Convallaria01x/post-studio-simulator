@@ -456,16 +456,15 @@ $('closeSaveSheet').addEventListener('click', closeSaveSheet);
 $('closeSaveSheetButton').addEventListener('click', closeSaveSheet);
 $('shareSavedImage').addEventListener('click', shareSavedImage);
 $('downloadSavedImage').addEventListener('click', (event) => {
-  if (!savedPreviewUrl) return;
-  // Quark handles a real download-link click more reliably than a scripted blob click.
-  if (isQuarkBrowser()) return;
-  event.preventDefault();
-  if (isAppleMobileBrowser()) {
-    const opened = window.open(savedPreviewUrl, '_blank');
-    if (!opened) window.location.href = savedPreviewUrl;
+  if (!savedPreviewUrl) {
+    event.preventDefault();
     return;
   }
-  triggerImageDownload();
+  if (isAppleMobileBrowser()) {
+    event.preventDefault();
+    const opened = window.open(savedPreviewUrl, '_blank');
+    if (!opened) window.location.href = savedPreviewUrl;
+  }
 });
 
 $('exportButton').addEventListener('click', async () => {
