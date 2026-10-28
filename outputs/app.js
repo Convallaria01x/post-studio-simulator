@@ -58,7 +58,7 @@ function fitCanvas() {
     ? lastFlowItem.getBoundingClientRect().bottom - cardTop
     : width * 0.8;
   const bottomReserve = state.platform === 'x' ? 24 : 28;
-  const minimumHeight = width * (state.platform === 'x' ? 0.95 : 0.9);
+  const minimumHeight = state.platform === 'x' ? width * 0.95 : 0;
   const targetHeight = Math.max(minimumHeight, flowBottom + bottomReserve);
   card.style.aspectRatio = 'auto';
   card.style.height = Math.ceil(targetHeight) + 'px';
@@ -231,7 +231,13 @@ window.addEventListener('resize', () => requestAnimationFrame(fitCanvas));
 $('resetButton').addEventListener('click', () => window.location.reload());
 
 function isMobileBrowser() {
-  return /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent || '');
+  return /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent || '')
+    || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+}
+
+function isAppleMobileBrowser() {
+  return /iPhone|iPad|iPod/i.test(navigator.userAgent || '')
+    || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 }
 
 function canvasToBlob(canvas) {
@@ -249,6 +255,9 @@ function openSaveSheet(blob, filename) {
   savedPreviewUrl = URL.createObjectURL(blob);
   $('savePreview').src = savedPreviewUrl;
   $('savePreview').dataset.filename = filename;
+  const downloadLink = $('downloadSavedImage');
+  downloadLink.href = savedPreviewUrl;
+  downloadLink.download = filename;
   $('saveSheet').classList.add('open');
   $('saveSheet').setAttribute('aria-hidden', 'false');
 }
@@ -260,6 +269,7 @@ function closeSaveSheet() {
   savedPreviewUrl = '';
   savedBlob = null;
   $('savePreview').removeAttribute('src');
+  $('downloadSavedImage').removeAttribute('href');
 }
 
 async function saveImage(canvas) {
@@ -341,6 +351,12 @@ async function shareSavedImage() {
 $('closeSaveSheet').addEventListener('click', closeSaveSheet);
 $('closeSaveSheetButton').addEventListener('click', closeSaveSheet);
 $('shareSavedImage').addEventListener('click', shareSavedImage);
+$('downloadSavedImage').addEventListener('click', (event) => {
+  if (!isAppleMobileBrowser() || !savedPreviewUrl) return;
+  event.preventDefault();
+  const opened = window.open(savedPreviewUrl, '_blank', 'noopener');
+  if (!opened) window.location.href = savedPreviewUrl;
+});
 
 $('exportButton').addEventListener('click', async () => {
   const button = $('exportButton'); button.disabled = true; button.textContent = '生成中…';

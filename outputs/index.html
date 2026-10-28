@@ -115,7 +115,6 @@
               </div>
               <div class="thread-copy"><div id="previewContentT"></div><div class="post-media" id="postMediaT"><img id="mediaImageT" alt="配图" /></div></div>
               <div class="thread-actions" id="threadActions"><span><i data-lucide="heart"></i></span><span><i data-lucide="message-circle"></i></span><span><i data-lucide="repeat-2"></i></span><span><i data-lucide="send"></i></span><span><svg class="custom-chart-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"></rect><path d="M8 16v-4M12 16V8M16 16v-6"></path></svg></span></div>
-              <div class="thread-divider"></div><div class="thread-dynamics">查看动态　›</div>
               <div class="thread-compose"><div class="small-avatar"><img id="avatarImageCompose" alt="" /></div><span>添加到串文</span><b><i data-lucide="image"></i><strong>GIF</strong><i data-lucide="expand"></i></b></div>
               <div class="thread-systembar"><span></span></div>
             </div>
@@ -130,9 +129,10 @@
     <div class="save-sheet-card" role="dialog" aria-modal="true" aria-label="保存图片">
       <button class="save-sheet-close" id="closeSaveSheetButton" type="button" aria-label="关闭">×</button>
       <strong>图片已生成</strong>
-      <span>长按图片保存到相册，也可以使用系统分享</span>
+       <span>点下方按钮保存；iPhone 打开图片后可长按存入相册</span>
       <img id="savePreview" alt="生成的图片预览" />
-      <button class="primary-button save-share-button" id="shareSavedImage" type="button">系统分享 / 保存</button>
+       <a class="primary-button save-download-button" id="downloadSavedImage" href="#" download>下载 / 打开图片</a>
+       <button class="ghost-button save-share-button" id="shareSavedImage" type="button">系统分享</button>
     </div>
   </div>
   <div class="toast" id="toast" role="status">图片已保存</div>
