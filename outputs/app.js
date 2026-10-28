@@ -49,7 +49,10 @@ function fitCanvas() {
   const screen = state.platform === 'x' ? $('xScreen') : $('threadsScreen');
   const cardTop = card.getBoundingClientRect().top;
   const lastFlowItem = Array.from(screen.children)
-    .filter((element) => getComputedStyle(element).display !== 'none')
+    .filter((element) => {
+      const style = getComputedStyle(element);
+      return style.display !== 'none' && style.position !== 'absolute' && style.position !== 'fixed';
+    })
     .pop();
   const flowBottom = lastFlowItem
     ? lastFlowItem.getBoundingClientRect().bottom - cardTop
@@ -77,10 +80,18 @@ function applyMedia() {
     }
     if (image.src !== state.media) image.src = state.media;
     const platformRatio = state.platform === 'x' ? '3 / 4' : '4 / 5';
-    const displayMode = state.mediaMode === 'auto' ? 'cover' : state.mediaMode;
-    image.style.objectFit = displayMode;
-    box.style.aspectRatio = platformRatio;
-    image.onload = () => requestAnimationFrame(fitCanvas);
+    const applyImageRatio = () => {
+      if (state.mediaMode === 'cover') {
+        box.style.aspectRatio = platformRatio;
+        image.style.objectFit = 'cover';
+      } else {
+        box.style.aspectRatio = `${image.naturalWidth} / ${image.naturalHeight}`;
+        image.style.objectFit = 'contain';
+      }
+      requestAnimationFrame(fitCanvas);
+    };
+    if (image.complete && image.naturalWidth) applyImageRatio();
+    else image.onload = applyImageRatio;
   });
 }
 
@@ -287,6 +298,12 @@ async function renderExportCanvas() {
   document.body.appendChild(clone);
   try {
     await document.fonts.ready;
+    await Promise.all(Array.from(clone.querySelectorAll('img')).map((image) => {
+      if (image.complete && image.naturalWidth) return Promise.resolve();
+      return typeof image.decode === 'function'
+        ? image.decode().catch(() => undefined)
+        : new Promise((resolve) => { image.onload = resolve; image.onerror = resolve; });
+    }));
     await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
     return await html2canvas(clone, {
       width: exportWidth,
