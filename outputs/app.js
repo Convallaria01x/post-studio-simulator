@@ -275,6 +275,22 @@ function closeSaveSheet() {
   $('downloadSavedImage').removeAttribute('href');
 }
 
+function triggerImageDownload() {
+  if (!savedBlob || !savedPreviewUrl) return false;
+  const filename = $('savePreview').dataset.filename || 'post-studio.png';
+  const link = document.createElement('a');
+  link.href = savedPreviewUrl;
+  link.download = filename;
+  link.rel = 'noopener';
+  link.style.position = 'fixed';
+  link.style.left = '-10000px';
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  $('toast').textContent = '已交给浏览器下载；请在夸克下载记录中打开或保存到相册';
+  return true;
+}
+
 async function saveImage(canvas) {
   const blob = await canvasToBlob(canvas);
   const filename = 'post-studio-' + state.platform + '.png';
@@ -358,25 +374,21 @@ async function shareSavedImage() {
     shareInProgress = false;
     button.disabled = false;
   }
-  const imageUrl = savedPreviewUrl;
-  if (imageUrl) {
-    const opened = window.open(imageUrl, '_blank', 'noopener');
-    if (!opened) window.location.href = imageUrl;
-    return true;
-  }
-  $('toast').textContent = '图片还在准备中，请稍后再点';
-  return false;
+  return triggerImageDownload();
 }
 
 $('closeSaveSheet').addEventListener('click', closeSaveSheet);
 $('closeSaveSheetButton').addEventListener('click', closeSaveSheet);
 $('shareSavedImage').addEventListener('click', shareSavedImage);
 $('downloadSavedImage').addEventListener('click', (event) => {
-  if (!isAppleMobileBrowser() || !savedPreviewUrl) return;
+  if (!savedPreviewUrl) return;
   event.preventDefault();
-  const imageUrl = savedPreviewUrl;
-  const opened = window.open(imageUrl, '_blank', 'noopener');
-  if (!opened) window.location.href = imageUrl;
+  if (isAppleMobileBrowser()) {
+    const opened = window.open(savedPreviewUrl, '_blank', 'noopener');
+    if (!opened) window.location.href = savedPreviewUrl;
+    return;
+  }
+  triggerImageDownload();
 });
 
 $('exportButton').addEventListener('click', async () => {
@@ -386,7 +398,8 @@ $('exportButton').addEventListener('click', async () => {
     const shot = await renderExportCanvas();
     $('toast').textContent = await saveImage(shot);
   } catch (error) {
-    $('toast').textContent = error && error.name === 'AbortError' ? '已取消保存' : '保存失败，请稍后再试';
+    const reason = error && error.message ? error.message.slice(0, 90) : '';
+    $('toast').textContent = error && error.name === 'AbortError' ? '已取消保存' : (reason ? '图片生成失败：' + reason : '图片生成失败，请重新尝试');
   }
   finally { card.classList.remove('exporting'); }
   button.disabled = false; button.innerHTML = '<span class="button-icon">↓</span>保存图片';
