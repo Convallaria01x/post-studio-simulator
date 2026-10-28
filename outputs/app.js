@@ -304,14 +304,17 @@ function openSaveSheet(blob, filename) {
     $('shareSavedImage').textContent = '存储到照片 / 分享';
   } else if (/Android/i.test(navigator.userAgent || '')) {
     $('saveGuidance').textContent = isQuarkBrowser()
-      ? '夸克：请点“打开原图”，在图片页长按图片并选“保存图片 / 保存到相册”。“下载图片”只会进入下载目录。'
+      ? '夸克：请直接长按弹窗里的预览图，选择“保存图片 / 保存到相册”。不要打开新页面。'
       : '安卓：请点“打开原图”，长按图片并选“保存图片”；“下载图片”只会进入下载目录。';
-    downloadLink.textContent = '下载图片（到下载目录）';
-    $('openSavedImage').textContent = '打开原图 / 长按保存';
+    downloadLink.textContent = isQuarkBrowser() ? '下载图片到夸克下载目录' : '下载图片（到下载目录）';
+    $('openSavedImage').textContent = isQuarkBrowser() ? '定位预览图并长按存相册' : '打开原图 / 长按保存';
     $('shareSavedImage').textContent = '打开系统分享';
+    $('shareSavedImage').hidden = isQuarkBrowser();
   } else {
     $('saveGuidance').textContent = '下载后的 PNG 图片可在设备的下载记录或文件管理中找到。';
     downloadLink.textContent = '下载图片';
+    $('openSavedImage').hidden = false;
+    $('shareSavedImage').hidden = false;
     $('shareSavedImage').textContent = '打开系统分享';
   }
   $('saveSheet').classList.add('open');
@@ -320,6 +323,12 @@ function openSaveSheet(blob, filename) {
 
 function openSavedImageInTab() {
   if (!savedPreviewUrl) return false;
+  if (isQuarkBrowser()) {
+    const preview = $('savePreview');
+    preview.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    $('toast').textContent = '请直接长按弹窗里的预览图，选择“保存图片 / 保存到相册”';
+    return true;
+  }
   const opened = window.open(savedPreviewUrl, '_blank');
   if (!opened) {
     $('toast').textContent = '夸克拦截了原图页面，请直接点“下载图片”';
