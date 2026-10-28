@@ -294,6 +294,19 @@ function openSaveSheet(blob, filename) {
   const downloadLink = $('downloadSavedImage');
   downloadLink.href = savedPreviewUrl;
   downloadLink.download = filename;
+  if (isAppleMobileBrowser()) {
+    $('saveGuidance').textContent = 'iPhone：点“打开系统分享”，再选“存储图像”即可保存到照片。';
+    downloadLink.textContent = '打开图片';
+    $('shareSavedImage').textContent = '存储到照片 / 分享';
+  } else if (/Android/i.test(navigator.userAgent || '')) {
+    $('saveGuidance').textContent = '安卓 / 夸克：下载会进入下载目录，不会自动出现在相册。请在夸克下载记录打开图片并选“保存到相册”；若没有该选项，可在文件管理中将 PNG 移到 Pictures。';
+    downloadLink.textContent = '下载图片（到下载目录）';
+    $('shareSavedImage').textContent = '打开系统分享';
+  } else {
+    $('saveGuidance').textContent = '下载后的 PNG 图片可在设备的下载记录或文件管理中找到。';
+    downloadLink.textContent = '下载图片';
+    $('shareSavedImage').textContent = '打开系统分享';
+  }
   $('saveSheet').classList.add('open');
   $('saveSheet').setAttribute('aria-hidden', 'false');
 }
@@ -407,16 +420,18 @@ async function shareSavedImage() {
       const file = new File([savedBlob], filename, { type: 'image/png' });
       if (navigator.canShare({ files: [file] })) {
         await navigator.share({ files: [file], title: 'Post Studio 图片' });
-        $('toast').textContent = '请在系统菜单中选择“存储图像 / 保存图片”';
+        $('toast').textContent = isAppleMobileBrowser()
+          ? '请在系统菜单中选择“存储图像”'
+          : '分享面板已打开；若无“保存图片”，请从夸克下载记录保存到相册';
         return true;
       }
     }
   } catch (error) {
     if (error && error.name === 'AbortError') {
-      $('toast').textContent = '已取消；可用“下载 / 打开图片”继续保存';
+      $('toast').textContent = '已取消；可用“下载图片”保存到下载目录';
       return false;
     }
-    $('toast').textContent = '系统保存面板不可用，请用“下载 / 打开图片”';
+    $('toast').textContent = '系统分享不可用，请用“下载图片”保存到下载目录';
   } finally {
     shareInProgress = false;
     button.disabled = false;
