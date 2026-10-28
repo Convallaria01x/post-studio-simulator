@@ -457,6 +457,8 @@ $('closeSaveSheetButton').addEventListener('click', closeSaveSheet);
 $('shareSavedImage').addEventListener('click', shareSavedImage);
 $('downloadSavedImage').addEventListener('click', (event) => {
   if (!savedPreviewUrl) return;
+  // Quark handles a real download-link click more reliably than a scripted blob click.
+  if (isQuarkBrowser()) return;
   event.preventDefault();
   if (isAppleMobileBrowser()) {
     const opened = window.open(savedPreviewUrl, '_blank');
