@@ -249,33 +249,17 @@ function canvasToBlob(canvas) {
 
 let savedBlob = null;
 let savedPreviewUrl = '';
-let savedDataUrl = '';
 let shareInProgress = false;
 
-function blobToDataUrl(blob) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = reject;
-    reader.readAsDataURL(blob);
-  });
-}
-
-async function openSaveSheet(blob, filename) {
+function openSaveSheet(blob, filename) {
   savedBlob = blob;
   if (savedPreviewUrl) URL.revokeObjectURL(savedPreviewUrl);
-  savedDataUrl = '';
   savedPreviewUrl = URL.createObjectURL(blob);
   $('savePreview').src = savedPreviewUrl;
   $('savePreview').dataset.filename = filename;
   const downloadLink = $('downloadSavedImage');
   downloadLink.href = savedPreviewUrl;
   downloadLink.download = filename;
-  const dataUrl = await blobToDataUrl(blob);
-  if (savedBlob !== blob) return;
-  savedDataUrl = dataUrl;
-  $('savePreview').src = dataUrl;
-  downloadLink.href = dataUrl;
   $('saveSheet').classList.add('open');
   $('saveSheet').setAttribute('aria-hidden', 'false');
 }
@@ -285,7 +269,6 @@ function closeSaveSheet() {
   $('saveSheet').setAttribute('aria-hidden', 'true');
   if (savedPreviewUrl) URL.revokeObjectURL(savedPreviewUrl);
   savedPreviewUrl = '';
-  savedDataUrl = '';
   savedBlob = null;
   shareInProgress = false;
   $('savePreview').removeAttribute('src');
@@ -297,7 +280,7 @@ async function saveImage(canvas) {
   const filename = 'post-studio-' + state.platform + '.png';
   const mobile = isMobileBrowser();
   if (mobile) {
-    await openSaveSheet(blob, filename);
+    openSaveSheet(blob, filename);
     return '图片已生成，请选择保存方式';
   }
   const url = URL.createObjectURL(blob);
@@ -375,7 +358,7 @@ async function shareSavedImage() {
     shareInProgress = false;
     button.disabled = false;
   }
-  const imageUrl = savedDataUrl || savedPreviewUrl;
+  const imageUrl = savedPreviewUrl;
   if (imageUrl) {
     const opened = window.open(imageUrl, '_blank', 'noopener');
     if (!opened) window.location.href = imageUrl;
@@ -391,7 +374,7 @@ $('shareSavedImage').addEventListener('click', shareSavedImage);
 $('downloadSavedImage').addEventListener('click', (event) => {
   if (!isAppleMobileBrowser() || !savedPreviewUrl) return;
   event.preventDefault();
-  const imageUrl = savedDataUrl || savedPreviewUrl;
+  const imageUrl = savedPreviewUrl;
   const opened = window.open(imageUrl, '_blank', 'noopener');
   if (!opened) window.location.href = imageUrl;
 });
