@@ -250,6 +250,7 @@ function canvasToBlob(canvas) {
 let savedBlob = null;
 let savedPreviewUrl = '';
 let savedDataUrl = '';
+let shareInProgress = false;
 
 function blobToDataUrl(blob) {
   return new Promise((resolve, reject) => {
@@ -260,7 +261,7 @@ function blobToDataUrl(blob) {
   });
 }
 
-function openSaveSheet(blob, filename) {
+async function openSaveSheet(blob, filename) {
   savedBlob = blob;
   if (savedPreviewUrl) URL.revokeObjectURL(savedPreviewUrl);
   savedDataUrl = '';
@@ -270,12 +271,11 @@ function openSaveSheet(blob, filename) {
   const downloadLink = $('downloadSavedImage');
   downloadLink.href = savedPreviewUrl;
   downloadLink.download = filename;
-  blobToDataUrl(blob).then((dataUrl) => {
-    if (savedBlob !== blob) return;
-    savedDataUrl = dataUrl;
-    $('savePreview').src = dataUrl;
-    downloadLink.href = dataUrl;
-  }).catch(() => undefined);
+  const dataUrl = await blobToDataUrl(blob);
+  if (savedBlob !== blob) return;
+  savedDataUrl = dataUrl;
+  $('savePreview').src = dataUrl;
+  downloadLink.href = dataUrl;
   $('saveSheet').classList.add('open');
   $('saveSheet').setAttribute('aria-hidden', 'false');
 }
@@ -287,6 +287,7 @@ function closeSaveSheet() {
   savedPreviewUrl = '';
   savedDataUrl = '';
   savedBlob = null;
+  shareInProgress = false;
   $('savePreview').removeAttribute('src');
   $('downloadSavedImage').removeAttribute('href');
 }
@@ -296,8 +297,8 @@ async function saveImage(canvas) {
   const filename = 'post-studio-' + state.platform + '.png';
   const mobile = isMobileBrowser();
   if (mobile) {
-    openSaveSheet(blob, filename);
-    return '图片已生成，请在预览中长按保存';
+    await openSaveSheet(blob, filename);
+    return '图片已生成，请选择保存方式';
   }
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
@@ -350,19 +351,29 @@ async function renderExportCanvas() {
 }
 
 async function shareSavedImage() {
-  if (!savedBlob) return false;
+  if (!savedBlob || shareInProgress) return false;
+  shareInProgress = true;
+  const button = $('shareSavedImage');
+  button.disabled = true;
   const filename = $('savePreview').dataset.filename || 'post-studio.png';
   try {
     if (navigator.share && navigator.canShare && typeof File !== 'undefined') {
       const file = new File([savedBlob], filename, { type: 'image/png' });
       if (navigator.canShare({ files: [file] })) {
         await navigator.share({ files: [file], title: 'Post Studio 图片' });
-        $('toast').textContent = '已打开系统分享面板';
+        $('toast').textContent = '请在系统菜单中选择“存储图像 / 保存图片”';
         return true;
       }
     }
   } catch (error) {
-    if (error && error.name === 'AbortError') return false;
+    if (error && error.name === 'AbortError') {
+      $('toast').textContent = '已取消；可用“下载 / 打开图片”继续保存';
+      return false;
+    }
+    $('toast').textContent = '系统保存面板不可用，请用“下载 / 打开图片”';
+  } finally {
+    shareInProgress = false;
+    button.disabled = false;
   }
   const imageUrl = savedDataUrl || savedPreviewUrl;
   if (imageUrl) {
@@ -370,6 +381,7 @@ async function shareSavedImage() {
     if (!opened) window.location.href = imageUrl;
     return true;
   }
+  $('toast').textContent = '图片还在准备中，请稍后再点';
   return false;
 }
 
