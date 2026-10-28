@@ -320,9 +320,12 @@ function openSaveSheet(blob, filename) {
 
 function openSavedImageInTab() {
   if (!savedPreviewUrl) return false;
-  const opened = window.open(savedPreviewUrl, '_blank', 'noopener');
-  if (!opened) window.location.href = savedPreviewUrl;
-  $('toast').textContent = '原图已打开，请长按图片选择“保存图片 / 保存到相册”';
+  const opened = window.open(savedPreviewUrl, '_blank');
+  if (!opened) {
+    $('toast').textContent = '夸克拦截了新页面，请使用“下载图片”后从下载记录打开';
+    return false;
+  }
+  $('toast').textContent = '原图已在新页面打开，请长按图片选择“保存图片 / 保存到相册”';
   return true;
 }
 
@@ -426,6 +429,7 @@ async function renderExportCanvas() {
 
 async function shareSavedImage() {
   if (!savedBlob || shareInProgress) return false;
+  if (isQuarkBrowser()) return openSavedImageInTab();
   shareInProgress = true;
   const button = $('shareSavedImage');
   button.disabled = true;
@@ -434,7 +438,11 @@ async function shareSavedImage() {
     if (navigator.share && navigator.canShare && typeof File !== 'undefined') {
       const file = new File([savedBlob], filename, { type: 'image/png' });
       if (navigator.canShare({ files: [file] })) {
-        await navigator.share({ files: [file], title: 'Post Studio 图片' });
+        const shareTask = navigator.share({ files: [file], title: 'Post Studio 图片' });
+        await Promise.race([
+          shareTask,
+          new Promise((_, reject) => setTimeout(() => reject(new Error('分享面板响应超时')), 8000)),
+        ]);
         $('toast').textContent = isAppleMobileBrowser()
           ? '请在系统菜单中选择“存储图像”'
           : '分享面板已打开；若无“保存图片”，请从夸克下载记录保存到相册';
@@ -461,18 +469,18 @@ $('openSavedImage').addEventListener('click', openSavedImageInTab);
 $('downloadSavedImage').addEventListener('click', (event) => {
   if (!savedPreviewUrl) return;
   event.preventDefault();
-  if (isAppleMobileBrowser()) {
-    const opened = window.open(savedPreviewUrl, '_blank', 'noopener');
-    if (!opened) window.location.href = savedPreviewUrl;
+  if (isAppleMobileBrowser() || isQuarkBrowser()) {
+    openSavedImageInTab();
     return;
   }
   triggerImageDownload();
 });
 
 $('exportButton').addEventListener('click', async () => {
-  const button = $('exportButton'); button.disabled = true; button.textContent = '生成中…';
+  const button = $('exportButton'); button.disabled = true; button.textContent = '正在生成图片…';
+  const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('生成时间过长，请减少图片尺寸或关闭后重试')), 45000));
   try {
-    const shot = await renderExportCanvas();
+    const shot = await Promise.race([renderExportCanvas(), timeout]);
     $('toast').textContent = await saveImage(shot);
   } catch (error) {
     const reason = error && error.message ? error.message.slice(0, 90) : '';
