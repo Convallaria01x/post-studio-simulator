@@ -249,16 +249,33 @@ function canvasToBlob(canvas) {
 
 let savedBlob = null;
 let savedPreviewUrl = '';
+let savedDataUrl = '';
+
+function blobToDataUrl(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+}
 
 function openSaveSheet(blob, filename) {
   savedBlob = blob;
   if (savedPreviewUrl) URL.revokeObjectURL(savedPreviewUrl);
+  savedDataUrl = '';
   savedPreviewUrl = URL.createObjectURL(blob);
   $('savePreview').src = savedPreviewUrl;
   $('savePreview').dataset.filename = filename;
   const downloadLink = $('downloadSavedImage');
   downloadLink.href = savedPreviewUrl;
   downloadLink.download = filename;
+  blobToDataUrl(blob).then((dataUrl) => {
+    if (savedBlob !== blob) return;
+    savedDataUrl = dataUrl;
+    $('savePreview').src = dataUrl;
+    downloadLink.href = dataUrl;
+  }).catch(() => undefined);
   $('saveSheet').classList.add('open');
   $('saveSheet').setAttribute('aria-hidden', 'false');
 }
@@ -268,6 +285,7 @@ function closeSaveSheet() {
   $('saveSheet').setAttribute('aria-hidden', 'true');
   if (savedPreviewUrl) URL.revokeObjectURL(savedPreviewUrl);
   savedPreviewUrl = '';
+  savedDataUrl = '';
   savedBlob = null;
   $('savePreview').removeAttribute('src');
   $('downloadSavedImage').removeAttribute('href');
@@ -332,7 +350,7 @@ async function renderExportCanvas() {
 }
 
 async function shareSavedImage() {
-  if (!savedBlob) return;
+  if (!savedBlob) return false;
   const filename = $('savePreview').dataset.filename || 'post-studio.png';
   try {
     if (navigator.share && navigator.canShare && typeof File !== 'undefined') {
@@ -340,13 +358,19 @@ async function shareSavedImage() {
       if (navigator.canShare({ files: [file] })) {
         await navigator.share({ files: [file], title: 'Post Studio 图片' });
         $('toast').textContent = '已打开系统分享面板';
-        return;
+        return true;
       }
     }
   } catch (error) {
-    if (error && error.name === 'AbortError') return;
+    if (error && error.name === 'AbortError') return false;
   }
-  if (savedPreviewUrl) window.open(savedPreviewUrl, '_blank', 'noopener');
+  const imageUrl = savedDataUrl || savedPreviewUrl;
+  if (imageUrl) {
+    const opened = window.open(imageUrl, '_blank', 'noopener');
+    if (!opened) window.location.href = imageUrl;
+    return true;
+  }
+  return false;
 }
 
 $('closeSaveSheet').addEventListener('click', closeSaveSheet);
@@ -355,8 +379,9 @@ $('shareSavedImage').addEventListener('click', shareSavedImage);
 $('downloadSavedImage').addEventListener('click', (event) => {
   if (!isAppleMobileBrowser() || !savedPreviewUrl) return;
   event.preventDefault();
-  const opened = window.open(savedPreviewUrl, '_blank', 'noopener');
-  if (!opened) window.location.href = savedPreviewUrl;
+  const imageUrl = savedDataUrl || savedPreviewUrl;
+  const opened = window.open(imageUrl, '_blank', 'noopener');
+  if (!opened) window.location.href = imageUrl;
 });
 
 $('exportButton').addEventListener('click', async () => {
