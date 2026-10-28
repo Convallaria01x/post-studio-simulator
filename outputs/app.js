@@ -44,10 +44,11 @@ function setText(id, value) {
 function fitCanvas() {
   const width = card.offsetWidth;
   if (!width) return;
-  card.style.height = '';
-  card.style.aspectRatio = '3 / 4';
+  card.style.height = 'auto';
+  card.style.aspectRatio = 'auto';
   const screen = state.platform === 'x' ? $('xScreen') : $('threadsScreen');
   const cardTop = card.getBoundingClientRect().top;
+  const layoutScale = card.getBoundingClientRect().width / width || 1;
   const lastFlowItem = Array.from(screen.children)
     .filter((element) => {
       const style = getComputedStyle(element);
@@ -55,10 +56,10 @@ function fitCanvas() {
     })
     .pop();
   const flowBottom = lastFlowItem
-    ? lastFlowItem.getBoundingClientRect().bottom - cardTop
+    ? (lastFlowItem.getBoundingClientRect().bottom - cardTop) / layoutScale
     : width * 0.8;
-  const bottomReserve = state.platform === 'x' ? 24 : 28;
-  const minimumHeight = state.platform === 'x' ? width * 0.95 : 0;
+  const bottomReserve = 24;
+  const minimumHeight = 0;
   const targetHeight = Math.max(minimumHeight, flowBottom + bottomReserve);
   card.style.aspectRatio = 'auto';
   card.style.height = Math.ceil(targetHeight) + 'px';
@@ -112,8 +113,8 @@ function render() {
   setText('previewSharesT', d.shares);
   $('charCount').textContent = d.content.length + ' / ' + (state.platform === 'x' ? 280 : 500);
   $('charCount').style.color = d.content.length > (state.platform === 'x' ? 280 : 500) ? '#c85f58' : '';
-  $('xScreen').style.display = state.platform === 'x' ? 'block' : 'none';
-  $('threadsScreen').style.display = state.platform === 'threads' ? 'block' : 'none';
+  $('xScreen').style.display = state.platform === 'x' ? 'flex' : 'none';
+  $('threadsScreen').style.display = state.platform === 'threads' ? 'flex' : 'none';
   document.querySelectorAll('.threads-only-field').forEach((field) => { field.style.display = state.platform === 'threads' ? 'block' : 'none'; });
   $('platformLabel').textContent = state.platform === 'x' ? 'X 帖子' : 'Threads 串文';
   $('dimensionLabel').textContent = '1080 × 1440 · 3:4';
